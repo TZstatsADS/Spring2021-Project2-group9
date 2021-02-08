@@ -26,128 +26,60 @@ library(ggplot2)
 #update data with automated script
 source("global.R") 
 #load('./output/covid-19.RData')
-shinyServer(function(input, output) {
-#----------------------------------------
-#tab panel 1 - Home Plots
-#preapare data for plot
-output$case_overtime <- renderPlotly({
-    #determin the row index for subset
-    req(input$log_scale)
-    end_date_index <- which(date_choices == input$date)
-    #if log scale is not enabled, we will just use cases
-    if (input$log_scale == FALSE) {
-        #render plotly figure
-        case_fig <- plot_ly()
-        #add comfirmed case lines
-        case_fig <- case_fig %>% add_lines(x = ~date_choices[1:end_date_index], 
-                             y = ~as.numeric(aggre_cases[input$country,])[1:end_date_index],
-                             line = list(color = 'rgba(67,67,67,1)', width = 2),
-                             name = 'Confirmed Cases')
-        #add death line 
-        case_fig <- case_fig %>% add_lines(x = ~date_choices[1:end_date_index],
-                               y = ~as.numeric(aggre_death[input$country,])[1:end_date_index],
-                               name = 'Death Toll')
-        #set the axis for the plot
-        case_fig <- case_fig %>% 
-            layout(title = paste0(input$country,'\t','Trend'),
-                   xaxis = list(title = 'Date',showgrid = FALSE), 
-                   yaxis = list(title = 'Comfirmed Cases/Deaths',showgrid=FALSE)
-                   )
-        }
-    #if enable log scale, we need to take log of the y values
-    else{
-        #render plotly figure
-        case_fig <- plot_ly()
-        #add comfirmed case lines
-        case_fig <- case_fig %>% add_lines(x = ~date_choices[1:end_date_index], 
-                                           y = ~log(as.numeric(aggre_cases[input$country,])[1:end_date_index]),
-                                           line = list(color = 'rgba(67,67,67,1)', width = 2),
-                                           name = 'Confirmed Cases')
-        #add death line 
-        case_fig <- case_fig %>% add_lines(x = ~date_choices[1:end_date_index],
-                                           y = ~log(as.numeric(aggre_death[input$country,])[1:end_date_index]),
-                                           name = 'Death Toll')
-        #set the axis for the plot
-        case_fig <- case_fig %>% 
-            layout(title = paste0(input$country,'<br>','\t','Trends'),
-                   xaxis = list(title = 'Date',showgrid = FALSE), 
-                   yaxis = list(title = 'Comfirmed Cases/Deaths(Log Scale)',showgrid=FALSE)
-            )
-    }
-    return(case_fig)
-        })
-#----------------------------------------
-#tab panel 2 - Maps
-data_countries <- reactive({
-    if(!is.null(input$choices)){
-        if(input$choices == "Cases"){
-            return(aggre_cases_copy)
-            
-        }else{
-            return(aggre_death_copy)
-        }}
-})
-
-#get the largest number of count for better color assignment
-maxTotal<- reactive(max(data_countries()%>%select_if(is.numeric), na.rm = T))    
-#color palette
-pal <- reactive(colorNumeric(c("#FFFFFFFF" ,rev(inferno(256))), domain = c(0,log(binning(maxTotal())))))    
+server = shinyServer(function(input, output) {
     
-output$map <- renderLeaflet({
-    map <-  leaflet(countries) %>%
-        addProviderTiles("Stadia.Outdoors", options = providerTileOptions(noWrap = TRUE)) %>%
-        setView(0, 30, zoom = 3) })
-
-
-observe({
-    if(!is.null(input$date_map)){
-        select_date <- format.Date(input$date_map,'%Y-%m-%d')
-    }
-    if(input$choices == "Cases"){
-        #merge the spatial dataframe and cases dataframe
-        aggre_cases_join <- merge(countries,
-                                  data_countries(),
-                                  by.x = 'NAME',
-                                  by.y = 'country_names',sort = FALSE)
-        #pop up for polygons
-        country_popup <- paste0("<strong>Country: </strong>",
-                                aggre_cases_join$NAME,
-                                "<br><strong>",
-                                "Total Cases: ",
-                                aggre_cases_join[[select_date]],
-                                "<br><strong>")
-        leafletProxy("map", data = aggre_cases_join)%>%
-            addPolygons(fillColor = pal()(log((aggre_cases_join[[select_date]])+1)),
-                        layerId = ~NAME,
-                        fillOpacity = 1,
-                        color = "#BDBDC3",
-                        weight = 1,
-                        popup = country_popup) 
-    } else {
-        #join the two dfs together
-        aggre_death_join<- merge(countries,
-                                 data_countries(),
-                                 by.x = 'NAME',
-                                 by.y = 'country_names',
-                                 sort = FALSE)
-        #pop up for polygons
-        country_popup <- paste0("<strong>Country: </strong>",
-                                aggre_death_join$NAME,
-                                "<br><strong>",
-                                "Total Deaths: ",
-                                aggre_death_join[[select_date]],
-                                "<br><strong>")
+    
+    output$plot2  <- renderPlot({
         
-        leafletProxy("map", data = aggre_death_join)%>%
-            addPolygons(fillColor = pal()(log((aggre_death_join[[select_date]])+1)),
-                        layerId = ~NAME,
-                        fillOpacity = 1,
-                        color = "#BDBDC3",
-                        weight = 1,
-                        popup = country_popup)
+        #store filters
+        #CountryFilter<- input$selected_country
+        CountryFilter<- "Israel"
+        COuntryISOFilter<-"ISR"
         
+        
+        #make ready recovered
+        covid_dat_unique_country_timeseries_recovered <- global_recovered %>% filter(Country.Region == CountryFilter)
+        final_df <- as.data.frame(t(covid_dat_unique_country_timeseries_recovered))
+        final_df <- tibble::rownames_to_column(final_df, "row_names")
+        final_df <- final_df %>% slice(5:n())
+        #change column names
+        recovered<-select(final_df, D=row_names, R=V1)
+        recovered$D <- as.Date(recovered$D, format="X%m.%d.%y")
+        recovered$R <- as.integer(recovered$R)
+        
+        
+        
+        #make ready vaccines
+        Vacc_use <- global_Vaccine %>% 
+            select(location,iso_code,date,people_fully_vaccinated,people_fully_vaccinated_per_hundred)
+        Vacc_use_Country_Filter<- Vacc_use %>% filter(iso_code == COuntryISOFilter & !is.na(people_fully_vaccinated))
+        Vacc_use_Country_Filter$date <- as.Date(Vacc_use_Country_Filter$date, format="%Y-%m-%d")
+        
+        #create plot
+        plt<-ggplot()  
+        
+        if (input$rec == TRUE){
+            plt<-plt + geom_line(data = recovered, aes(x=D, y = R, color = "red"))
         }
+        
+        if (input$vac == TRUE){
+            plt<-plt + geom_line(data = Vacc_use_Country_Filter, aes(x=date, y = people_fully_vaccinated, color = "blue"))
+        }
+        
+        plt<-plt + labs(
+            title = "Israel Timeline",
+            subtitle = "Period 2020-2021",
+            caption = "Data: Johns Hopkins",
+            x = "Date",
+            y = "Number of People"
+        )
+        
+        plt + scale_color_manual(name = "Legend", values = c("blue" = "blue","red" = "red" ), labels = c("Fully Vacinated","Recovered"))
+        
+        
+        #plt
+        plot(plt)
+        
+        
     })
-
-
 })
