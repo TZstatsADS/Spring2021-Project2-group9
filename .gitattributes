@@ -1,2 +1,2 @@
 *.R text eol=lf
-*.html text eol=crlf
+*.html text eol=lf
