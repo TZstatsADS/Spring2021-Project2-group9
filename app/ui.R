@@ -31,16 +31,7 @@ ui = shiny::htmlTemplate(
   
   rec_selector= checkboxInput("rec", "Show Recovered", value = TRUE, width = NULL),
   vac_selector = checkboxInput("vac", "Show Vaccinated", value = TRUE, width = NULL),
-  plot2=fluidPage(
-    mainPanel(
-      tabsetPanel(type = "tabs",
-                  tabPanel("Plot", plotOutput("plot2")),
-                  tabPanel("Summary", verbatimTextOutput("summary")),
-                  tabPanel("SIR", plotOutput("sir"))
-      )
-    )
-    
-  )
+  cas_selector = checkboxInput("cas", "Show Cases", value = TRUE, width = NULL)
   
 )
 

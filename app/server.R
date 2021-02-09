@@ -37,6 +37,16 @@ server = shinyServer(function(input, output) {
         COuntryISOFilter<-"ISR"
         
         
+        #make ready cases
+        covid_dat_unique_country_timeseries_cases <- global_cases%>% filter(Country.Region == CountryFilter)
+        cases_df <- as.data.frame(t(covid_dat_unique_country_timeseries_cases))
+        cases_df <- tibble::rownames_to_column(cases_df, "row_names")
+        cases_df <- cases_df %>% slice(5:n())
+        #change column names
+        cases<-select(cases_df, D=row_names, C=V1)
+        cases$D <- as.Date(cases$D, format="X%m.%d.%y")
+        cases$C <- as.integer(cases$C)
+        
         #make ready recovered
         covid_dat_unique_country_timeseries_recovered <- global_recovered %>% filter(Country.Region == CountryFilter)
         final_df <- as.data.frame(t(covid_dat_unique_country_timeseries_recovered))
@@ -58,12 +68,24 @@ server = shinyServer(function(input, output) {
         #create plot
         plt<-ggplot()  
         
-        if (input$rec == TRUE){
-            plt<-plt + geom_line(data = recovered, aes(x=D, y = R, color = "red"))
+        Labelslist <- c()
+        Colorlist <-c()
+        if (input$vac == TRUE){
+            plt<-plt + geom_line(data = Vacc_use_Country_Filter, aes(x=date, y = people_fully_vaccinated, colour="blue"))
+            Labelslist <- c(Labelslist, "Fully Vacinated")
+            Colorlist <-c(Colorlist,"blue")
         }
         
-        if (input$vac == TRUE){
-            plt<-plt + geom_line(data = Vacc_use_Country_Filter, aes(x=date, y = people_fully_vaccinated, color = "blue"))
+        if (input$rec == TRUE){
+            plt<-plt + geom_line(data = recovered, aes(x=D, y = R, colour="red"))
+            Labelslist <- c(Labelslist, "Recovered")
+            Colorlist <-c(Colorlist,"red")
+        }
+        
+        if (input$cas == TRUE){
+            plt<-plt + geom_line(data = cases, aes(x=D, y = C, colour="black"))
+            Labelslist <- c(Labelslist, "Cases")
+            Colorlist <-c(Colorlist,"black")
         }
         
         plt<-plt + labs(
@@ -74,12 +96,6 @@ server = shinyServer(function(input, output) {
             y = "Number of People"
         )
         
-        plt + scale_color_manual(name = "Legend", values = c("blue" = "blue","red" = "red" ), labels = c("Fully Vacinated","Recovered"))
-        
-        
-        #plt
-        plot(plt)
-        
-        
+        plt + scale_color_manual(name = "Legend",breaks = Colorlist, values =Colorlist , labels = Labelslist)
     })
 })
