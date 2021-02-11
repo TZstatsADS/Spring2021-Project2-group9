@@ -51,6 +51,5 @@ ui = shiny::htmlTemplate(
   
   leaflet_map = leafletOutput(outputId = "map")
   
-  
 )
 

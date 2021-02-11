@@ -30,6 +30,7 @@ library(gtrendsR)
 #update data with automated script
 source("global.R") 
 #load('./output/covid-19.RData')
+
 server = shinyServer(function(input, output) {
     
     
@@ -198,5 +199,59 @@ server = shinyServer(function(input, output) {
                     popup = country_popup)
       
     }
-  })
+  })    
+    
+    output$plot3<-renderPlot({
+        
+        Vaccine_URL <- "https://raw.githubusercontent.com/owid/covid-19-data/master/public/data/vaccinations/vaccinations.csv"
+        global_Vaccine <- read.csv(Vaccine_URL)
+        #data 
+        ana_data<-global_Vaccine%>%
+            select(location,iso_code,date,total_vaccinations, people_vaccinated)
+        ana_data<-ana_data[which(!is.na(ana_data$total_vaccinations)),]
+        ana_data<-ana_data[which(!is.na(ana_data$people_vaccinated)),]
+        ana_data<-ana_data%>%
+            filter(iso_code=="USA" | iso_code=="MEX" | iso_code=="CHN" | iso_code=="GBR" | iso_code=="BRA" | iso_code=="ITA"| iso_code=="ISR")
+        ana_data<-as.data.frame(ana_data)
+        add_var<-function(a){
+          
+            x<-sum(a$total_vaccinations)
+            y<-sum(a$people_vaccinated)
+            return(c(x,y))
+        }
+        plot_data_ana<-ddply(ana_data,.(iso_code),add_var)
+        
+        # Library
+        
+        
+        library("tidyverse")
+        plot_data_ana2<-plot_data_ana%>%
+            select(iso_code,V1,V2)%>%
+            gather(key="variable",value="value",-iso_code)
+        
+        plot_data_ana2<-as.data.frame(plot_data_ana2)
+        ggplot(plot_data_ana2,aes(x=iso_code,y=value))+
+            geom_bar(stat="identity",fill="red")
+            
+        # To use the fmsb package, I have to add 2 lines to the dataframe: the max and min of each variable to show on the plot!
+       
+        ggplot(plot_data_ana)+
+            geom_bar(stat="identity",aes(x=iso_code,y=V1,fill="total"))+
+            geom_bar(stat="identity",aes(x=iso_code,y=V2,fill="people_vaccinated"))+
+            labs(y="Number of vaccines",x="country",title="Total Vaccinations VS. People Vaccinated")
+        
+       
+    })
+    
+   # output$plot4<-renderPlot({
+   #     Death_data<-global_death[,-c(3, 1, 4)]
+   #     Death_data<-Death_data%>%
+   #         filter(Country.Region=="United Kingdom"|Country.Region=="US"|Country.Region=="Mexico"|Country.Region=="Italy"
+   #                |Country.Region=="Israel"|Country.Region=="Brazil"|Country.Region=="China")
+   #
+    #    apply(Death_data[-1,-1],1,sum)
+   #     dim(Death_data)
+            
+   # })
+    
 })
