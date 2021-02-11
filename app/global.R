@@ -69,6 +69,22 @@ if (!require("htmlwidgets")) {
   install.packages("htmlwidgets")
   library(htmlwidgets)
 }
+if (!require("dygraphs")) {
+  install.packages("dygraphs")
+  library(dygraphs)
+}
+if (!require("xts")) {
+  install.packages("xts")
+  library(xts)
+}
+if (!require("tidyr")) {
+  install.packages("tidyr")
+  library(tidyr)
+}
+if (!require("gtrendsR")) {
+  install.packages("gtrendsR")
+  library(gtrendsR)
+}
 #--------------------------------------------------------------------
 ###############################Define Functions#######################
 data_cooker <- function(df){

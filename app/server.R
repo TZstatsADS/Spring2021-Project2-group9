@@ -21,6 +21,10 @@ library(shiny)
 library(shinythemes)
 library(plotly)
 library(ggplot2)
+library(dygraphs)
+library(tidyr)
+library(xts)
+library(gtrendsR)
 #can run RData directly to get the necessary date for the app
 #global.r will enable us to get new data everyday
 #update data with automated script
@@ -31,7 +35,7 @@ server = shinyServer(function(input, output) {
     
     
     output$plot2  <- renderPlot({
-        
+
         #store filters
         #CountryFilter<- input$selected_country
         CountryFilter<- "Israel"
@@ -96,12 +100,106 @@ server = shinyServer(function(input, output) {
             x = "Date",
             y = "Number of People"
         )
-        
+
         plt + scale_color_manual(name = "Legend",breaks = Colorlist, values =Colorlist , labels = Labelslist)
+    })
+    
+    output$vaccine_interest_timeline = renderDygraph({
+        geo=""
+        if(input$search_geo == "World")
+            geo=""
+        else if(input$search_geo == "United States")
+            geo="US"
+
+        # TODO This is slow live - maintain data locally
+        trends = gtrends(c("Moderna", "BioNTech", "AstraZeneca", "Pfizer"), #"Novavax", 
+                      geo=geo,
+                      gprop="web",
+                      time="today 12-m")
+        data = trends$interest_over_time %>%
+            mutate(hits = replace(hits, hits == "<1", "0")) %>%
+            mutate(hits = as.numeric(hits)) %>%
+            pivot_wider(id_cols=date, names_from=keyword, values_from=hits)
+        data = as.xts(data, order.by = data$date)
+        data = data[, colnames(data) != "date"]
+        
+        dygraph(data) %>%
+            dyRangeSelector()
     })
     
     
     
+    
+    data_countries <- reactive({
+    if(!is.null(input$choices)){
+      if(input$choices == "cases"){
+        return(aggre_cases_copy)
+        
+      }else{
+        return(aggre_death_copy)
+      }}
+  })
+  
+  #get the largest number of count for better color assignment
+  maxTotal<- reactive(max(data_countries()%>%select_if(is.numeric), na.rm = T))    
+  #color palette
+  pal <- reactive(colorNumeric(c("#FFFFFFFF" ,rev(inferno(256))), domain = c(0,log(binning(maxTotal())))))    
+  
+  output$map <- renderLeaflet({
+    map <-  leaflet(countries) %>%
+      addProviderTiles("Stadia.Outdoors", options = providerTileOptions(noWrap = TRUE)) %>%
+      setView(0, 30, zoom = 3) })
+  
+  
+  observe({
+    if(!is.null(input$date_map)){
+      select_date <- format.Date(input$date_map,'%Y-%m-%d')
+    }
+    if(input$choices == "cases"){
+      #merge the spatial dataframe and cases dataframe
+      aggre_cases_join <- merge(countries,
+                                data_countries(),
+                                by.x = 'NAME',
+                                by.y = 'country_names',sort = FALSE)
+      #pop up for polygons
+      country_popup <- paste0("<strong>Country: </strong>",
+                              aggre_cases_join$NAME,
+                              "<br><strong>",
+                              "Total Cases: ",
+                              aggre_cases_join[[select_date]],
+                              "<br><strong>")
+      leafletProxy("map", data = aggre_cases_join)%>%
+        addPolygons(fillColor = pal()(log((aggre_cases_join[[select_date]])+1)),
+                    layerId = ~NAME,
+                    fillOpacity = 1,
+                    color = "#BDBDC3",
+                    weight = 1,
+                    popup = country_popup) 
+    } else {
+      #join the two dfs together
+      aggre_death_join<- merge(countries,
+                               data_countries(),
+                               by.x = 'NAME',
+                               by.y = 'country_names',
+                               sort = FALSE)
+      #pop up for polygons
+      country_popup <- paste0("<strong>Country: </strong>",
+                              aggre_death_join$NAME,
+                              "<br><strong>",
+                              "Total Deaths: ",
+                              aggre_death_join[[select_date]],
+                              "<br><strong>")
+      
+      leafletProxy("map", data = aggre_death_join)%>%
+        addPolygons(fillColor = pal()(log((aggre_death_join[[select_date]])+1)),
+                    layerId = ~NAME,
+                    fillOpacity = 1,
+                    color = "#BDBDC3",
+                    weight = 1,
+                    popup = country_popup)
+      
+    }
+  })    
     
     output$plot3<-renderPlot({
         
