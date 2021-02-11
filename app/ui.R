@@ -38,6 +38,5 @@ ui = shiny::htmlTemplate(
   # Vaccine search interest
   search_geo_selector = selectInput("search_geo", "Select Search Locality",
                                     choices = c("World", "United States"), selected = "World")
-  
 )
 
