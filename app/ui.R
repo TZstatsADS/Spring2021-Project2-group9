@@ -33,5 +33,13 @@ ui = shiny::htmlTemplate(
   vac_selector = checkboxInput("vac", "Show Vaccinated", value = TRUE, width = NULL),
   cas_selector = checkboxInput("cas", "Show Cases", value = TRUE, width = NULL),
 
+  total_selector= checkboxInput("Total", "Show total Vaccination", value = TRUE, width = NULL),
+  people_selector = checkboxInput("People", "Show People Vaccinated", value = TRUE, width = NULL),
+  
+  Death_selector= checkboxInput("Death", "Show # of death", value = TRUE, width = NULL),
+  Cases_selector = checkboxInput("Cases", "Show # of cases confirmed", value = TRUE, width = NULL),
+  
 )
+
+
 
