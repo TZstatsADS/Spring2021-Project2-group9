@@ -37,7 +37,20 @@ ui = shiny::htmlTemplate(
   
   # Vaccine search interest
   search_geo_selector = selectInput("search_geo", "Select Search Locality",
-                                    choices = c("World", "United States"), selected = "World")
+                                    choices = c("World", "United States"), selected = "World"),
+  
+  time_selector = sliderInput('date_map','Input Date:',
+                #first day of data recording
+                min = as.Date(date_choices[1]),
+                #present day of data recording
+                max = as.Date(tail(date_choices,1)),
+                value = as.Date('2020-04-01','%Y-%m-%d'),
+                timeFormat = "%Y-%m-%d",
+                animate = TRUE, step = 5),
+  
+  
+  leaflet_map = leafletOutput(outputId = "map")
+  
   
 )
 
