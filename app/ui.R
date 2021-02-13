@@ -23,6 +23,9 @@ library(plotly)
 library(ggplot2)
 library(htmlwidgets) # to use saveWidget function
 library(dygraphs)
+library(tidyr)
+library(xts)
+library(gtrendsR)
 
 #load('./output/covid-19.RData')
 
@@ -46,10 +49,10 @@ ui = shiny::htmlTemplate(
                 max = as.Date(tail(date_choices,1)),
                 value = as.Date('2020-04-01','%Y-%m-%d'),
                 timeFormat = "%Y-%m-%d",
-                animate = TRUE, step = 5),
+                animate = TRUE, step = 5)
   
   
-  leaflet_map = leafletOutput(outputId = "map")
+  ##leaflet_map = leafletOutput(outputId = "map")
   
 )
 

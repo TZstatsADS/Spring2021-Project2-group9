@@ -130,118 +130,114 @@ server = shinyServer(function(input, output) {
     
     
     
-    data_countries <- reactive({
-    if(!is.null(input$choices)){
-      if(input$choices == "cases"){
-        return(aggre_cases_copy)
-        
-      }else{
-        return(aggre_death_copy)
-      }}
-  })
-  
-  #get the largest number of count for better color assignment
-  maxTotal<- reactive(max(data_countries()%>%select_if(is.numeric), na.rm = T))    
-  #color palette
-  pal <- reactive(colorNumeric(c("#FFFFFFFF" ,rev(inferno(256))), domain = c(0,log(binning(maxTotal())))))    
-  
-  output$map <- renderLeaflet({
-    map <-  leaflet(countries) %>%
-      addProviderTiles("Stadia.Outdoors", options = providerTileOptions(noWrap = TRUE)) %>%
-      setView(0, 30, zoom = 3) })
-  
-  
-  observe({
-    if(!is.null(input$date_map)){
-      select_date <- format.Date(input$date_map,'%Y-%m-%d')
-    }
-    if(input$choices == "cases"){
-      #merge the spatial dataframe and cases dataframe
-      aggre_cases_join <- merge(countries,
-                                data_countries(),
-                                by.x = 'NAME',
-                                by.y = 'country_names',sort = FALSE)
-      #pop up for polygons
-      country_popup <- paste0("<strong>Country: </strong>",
-                              aggre_cases_join$NAME,
-                              "<br><strong>",
-                              "Total Cases: ",
-                              aggre_cases_join[[select_date]],
-                              "<br><strong>")
-      leafletProxy("map", data = aggre_cases_join)%>%
-        addPolygons(fillColor = pal()(log((aggre_cases_join[[select_date]])+1)),
-                    layerId = ~NAME,
-                    fillOpacity = 1,
-                    color = "#BDBDC3",
-                    weight = 1,
-                    popup = country_popup) 
-    } else {
-      #join the two dfs together
-      aggre_death_join<- merge(countries,
-                               data_countries(),
-                               by.x = 'NAME',
-                               by.y = 'country_names',
-                               sort = FALSE)
-      #pop up for polygons
-      country_popup <- paste0("<strong>Country: </strong>",
-                              aggre_death_join$NAME,
-                              "<br><strong>",
-                              "Total Deaths: ",
-                              aggre_death_join[[select_date]],
-                              "<br><strong>")
-      
-      leafletProxy("map", data = aggre_death_join)%>%
-        addPolygons(fillColor = pal()(log((aggre_death_join[[select_date]])+1)),
-                    layerId = ~NAME,
-                    fillOpacity = 1,
-                    color = "#BDBDC3",
-                    weight = 1,
-                    popup = country_popup)
-      
-    }
-  })    
-    
-    output$plot3<-renderPlot({
-        
-        Vaccine_URL <- "https://raw.githubusercontent.com/owid/covid-19-data/master/public/data/vaccinations/vaccinations.csv"
-        global_Vaccine <- read.csv(Vaccine_URL)
-        #data 
-        ana_data<-global_Vaccine%>%
-            select(location,iso_code,date,total_vaccinations, people_vaccinated)
-        ana_data<-ana_data[which(!is.na(ana_data$total_vaccinations)),]
-        ana_data<-ana_data[which(!is.na(ana_data$people_vaccinated)),]
-        ana_data<-ana_data%>%
-            filter(iso_code=="USA" | iso_code=="MEX" | iso_code=="CHN" | iso_code=="GBR" | iso_code=="BRA" | iso_code=="ITA"| iso_code=="ISR")
-        ana_data<-as.data.frame(ana_data)
-        add_var<-function(a){
-          
-            x<-sum(a$total_vaccinations)
-            y<-sum(a$people_vaccinated)
-            return(c(x,y))
-        }
-        plot_data_ana<-ddply(ana_data,.(iso_code),add_var)
-        
-        # Library
-        
-        
-        library("tidyverse")
-        plot_data_ana2<-plot_data_ana%>%
-            select(iso_code,V1,V2)%>%
-            gather(key="variable",value="value",-iso_code)
-        
-        plot_data_ana2<-as.data.frame(plot_data_ana2)
-        ggplot(plot_data_ana2,aes(x=iso_code,y=value))+
-            geom_bar(stat="identity",fill="red")
-            
-        # To use the fmsb package, I have to add 2 lines to the dataframe: the max and min of each variable to show on the plot!
-       
-        ggplot(plot_data_ana)+
-            geom_bar(stat="identity",aes(x=iso_code,y=V1,fill="total"))+
-            geom_bar(stat="identity",aes(x=iso_code,y=V2,fill="people_vaccinated"))+
-            labs(y="Number of vaccines",x="country",title="Total Vaccinations VS. People Vaccinated")
-        
-       
-    })
+  #   data_countries <- reactive({
+  #   if(!is.null(input$choices)){
+  #     if(input$choices == "cases"){
+  #       return(aggre_cases_copy)
+  #       
+  #     }else{
+  #       return(aggre_death_copy)
+  #     }}
+  # })
+  # 
+  # #get the largest number of count for better color assignment
+  # maxTotal<- reactive(max(data_countries()%>%select_if(is.numeric), na.rm = T))    
+  # #color palette
+  # pal <- reactive(colorNumeric(c("#FFFFFFFF" ,rev(inferno(256))), domain = c(0,log(binning(maxTotal())))))    
+  # 
+  # output$map <- renderLeaflet({
+  #   map <-  leaflet(countries) %>%
+  #     addProviderTiles("Stadia.Outdoors", options = providerTileOptions(noWrap = TRUE)) %>%
+  #     setView(0, 30, zoom = 3) })
+  # 
+  # 
+  # observe({
+  #   if(!is.null(input$date_map)){
+  #     select_date <- format.Date(input$date_map,'%Y-%m-%d')
+  #   }
+  #   if(input$choices == "cases"){
+  #     #merge the spatial dataframe and cases dataframe
+  #     aggre_cases_join <- merge(countries,
+  #                               data_countries(),
+  #                               by.x = 'NAME',
+  #                               by.y = 'country_names',sort = FALSE)
+  #     #pop up for polygons
+  #     country_popup <- paste0("<strong>Country: </strong>",
+  #                             aggre_cases_join$NAME,
+  #                             "<br><strong>",
+  #                             "Total Cases: ",
+  #                             aggre_cases_join[[select_date]],
+  #                             "<br><strong>")
+  #     leafletProxy("map", data = aggre_cases_join)%>%
+  #       addPolygons(fillColor = pal()(log((aggre_cases_join[[select_date]])+1)),
+  #                   layerId = ~NAME,
+  #                   fillOpacity = 1,
+  #                   color = "#BDBDC3",
+  #                   weight = 1,
+  #                   popup = country_popup) 
+  #   } else {
+  #     #join the two dfs together
+  #     aggre_death_join<- merge(countries,
+  #                              data_countries(),
+  #                              by.x = 'NAME',
+  #                              by.y = 'country_names',
+  #                              sort = FALSE)
+  #     #pop up for polygons
+  #     country_popup <- paste0("<strong>Country: </strong>",
+  #                             aggre_death_join$NAME,
+  #                             "<br><strong>",
+  #                             "Total Deaths: ",
+  #                             aggre_death_join[[select_date]],
+  #                             "<br><strong>")
+  #     
+  #     leafletProxy("map", data = aggre_death_join)%>%
+  #       addPolygons(fillColor = pal()(log((aggre_death_join[[select_date]])+1)),
+  #                   layerId = ~NAME,
+  #                   fillOpacity = 1,
+  #                   color = "#BDBDC3",
+  #                   weight = 1,
+  #                   popup = country_popup)
+  #     
+  #   }
+  # })    
+  #   
+  #   output$plot3<-renderPlot({
+  #       
+  #       #data 
+  #       ana_data<-global_Vaccine%>%
+  #           select(location,iso_code,date,total_vaccinations, people_vaccinated)
+  #       ana_data<-ana_data[which(!is.na(ana_data$total_vaccinations)),]
+  #       ana_data<-ana_data[which(!is.na(ana_data$people_vaccinated)),]
+  #       ana_data<-ana_data%>%
+  #           filter(iso_code=="USA" | iso_code=="MEX" | iso_code=="CHN" | iso_code=="GBR" | iso_code=="BRA" | iso_code=="ITA"| iso_code=="ISR")
+  #       ana_data<-as.data.frame(ana_data)
+  #       add_var<-function(a){
+  #         
+  #           x<-sum(a$total_vaccinations)
+  #           y<-sum(a$people_vaccinated)
+  #           return(c(x,y))
+  #       }
+  #       plot_data_ana<-ddply(ana_data,.(iso_code),add_var)
+  #       
+  #       # Library
+  #       
+  #       plot_data_ana2<-plot_data_ana%>%
+  #           select(iso_code,V1,V2)%>%
+  #           gather(key="variable",value="value",-iso_code)
+  #       
+  #       plot_data_ana2<-as.data.frame(plot_data_ana2)
+  #       ggplot(plot_data_ana2,aes(x=iso_code,y=value))+
+  #           geom_bar(stat="identity",fill="red")
+  #           
+  #       # To use the fmsb package, I have to add 2 lines to the dataframe: the max and min of each variable to show on the plot!
+  #      
+  #       ggplot(plot_data_ana)+
+  #           geom_bar(stat="identity",aes(x=iso_code,y=V1,fill="total"))+
+  #           geom_bar(stat="identity",aes(x=iso_code,y=V2,fill="people_vaccinated"))+
+  #           labs(y="Number of vaccines",x="country",title="Total Vaccinations VS. People Vaccinated")
+  #       
+  #      
+  #   })
     
    # output$plot4<-renderPlot({
    #     Death_data<-global_death[,-c(3, 1, 4)]
