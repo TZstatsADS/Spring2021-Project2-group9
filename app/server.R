@@ -21,6 +21,7 @@ library(shiny)
 library(shinythemes)
 library(plotly)
 library(ggplot2)
+library(plyr)
 library(dygraphs)
 library(tidyr)
 library(xts)
@@ -218,12 +219,12 @@ server = shinyServer(function(input, output) {
             y<-sum(a$people_vaccinated)
             return(c(x,y))
         }
+        
         plot_data_ana<-ddply(ana_data,.(iso_code),add_var)
         
         # Library
         
         
-        library("tidyverse")
         plot_data_ana2<-plot_data_ana%>%
             select(iso_code,V1,V2)%>%
             gather(key="variable",value="value",-iso_code)
@@ -233,24 +234,71 @@ server = shinyServer(function(input, output) {
             geom_bar(stat="identity",fill="red")
             
         # To use the fmsb package, I have to add 2 lines to the dataframe: the max and min of each variable to show on the plot!
-       
-        ggplot(plot_data_ana)+
-            geom_bar(stat="identity",aes(x=iso_code,y=V1,fill="total"))+
-            geom_bar(stat="identity",aes(x=iso_code,y=V2,fill="people_vaccinated"))+
-            labs(y="Number of vaccines",x="country",title="Total Vaccinations VS. People Vaccinated")
         
        
+        if (input$Total == TRUE){
+            pltdeath<-ggplot(plot_data_ana)+
+               geom_bar(stat="identity",aes(x=iso_code,y=V1))
+                
+        }
+        
+        if (input$People == TRUE && input$Total == FALSE){
+            pltdeath<-ggplot(plot_data_ana)+
+                geom_bar(stat="identity",aes(x=iso_code,y=V2))
+                
+        }
+        if (input$Total == TRUE &&input$People == FALSE){
+            pltdeath<-ggplot(plot_data_ana)+
+                geom_bar(stat="identity",aes(x=iso_code,y=V1))
+            
+        }
+        
+        if (input$People == TRUE && input$Total==TRUE){
+            pltdeath<-       ggplot(plot_data_ana)+
+                geom_bar(stat="identity",aes(x=iso_code,y=V1,fill="total"))+
+                geom_bar(stat="identity",aes(x=iso_code,y=V2,fill="people_vaccinated"))+
+                labs(y="Number of vaccines",x="country",title="Total Vaccinations VS. People Vaccinated")
+        }
+       pltdeath+labs(y="Number of vaccines",x="country",title="Total Vaccinations VS. People Vaccinated")
     })
     
-   # output$plot4<-renderPlot({
-   #     Death_data<-global_death[,-c(3, 1, 4)]
-   #     Death_data<-Death_data%>%
-   #         filter(Country.Region=="United Kingdom"|Country.Region=="US"|Country.Region=="Mexico"|Country.Region=="Italy"
-   #                |Country.Region=="Israel"|Country.Region=="Brazil"|Country.Region=="China")
-   #
-    #    apply(Death_data[-1,-1],1,sum)
-   #     dim(Death_data)
-            
-   # })
     
+
+    output$plot4<-renderPlot({
+        cases<-global_cases[, c(2,389)]
+        cases<-cases[cases$Country.Region=="United Kingdom"|cases$Country.Region=="China"|cases$Country.Region=="Brazil"|cases$Country.Region=="Israel"|cases$Country.Region=="Italy"|cases$Country.Region=="Mexico"|cases$Country.Region=="US",]
+        add_function<-function(a){
+            x<-sum(a$X2.9.21)
+            return(x)
+        }
+        cases<-ddply(cases,.(Country.Region),add_function)
+        death<-global_death[, c(2,389)]
+        death<-death[death$Country.Region=="United Kingdom"|death$Country.Region=="China"|death$Country.Region=="Brazil"|death$Country.Region=="Israel"|death$Country.Region=="Italy"|death$Country.Region=="Mexico"|death$Country.Region=="US",]
+        death<-ddply(death,.(Country.Region),add_function)  
+        death_case<-cbind(death, cases[,2])
+        
+        
+        
+
+        if (input$Cases==TRUE && input$Death==TRUE | input$Cases==FALSE && input$Death==FALSE) {    
+            plt_death<-ggplot(death_case)+
+                geom_bar(stat="identity",aes(x=Country.Region,y=cases[,2],fill="cases"))+
+                geom_bar(stat="identity",aes(x=Country.Region,y=V1,fill="death"))+
+                labs(y="Number of cases",x="country",title="Cases VS. Death")
+        }
+        if (input$Cases==TRUE && input$Death==FALSE){
+            plt_death<- ggplot(death_case)+
+            geom_bar(stat="identity",aes(x=Country.Region,y=cases[,2]))+
+            labs(y="Number of cases",x="country",title="Cases")
+        }
+        
+        if (input$Cases==FALSE && input$Death==TRUE){
+           plt_death<-ggplot(death_case)+
+            geom_bar(stat="identity",aes(x=Country.Region,y=V1))+
+            labs(y="Number of death",x="country",title="Death")
+        
+        }
+        plt_death+theme(axis.text.x = element_text(angle = 45, hjust = 1))
+    })
+
 })

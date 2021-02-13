@@ -37,6 +37,12 @@ ui = shiny::htmlTemplate(
   rec_selector= checkboxInput("rec", "Show Recovered", value = TRUE, width = NULL),
   vac_selector = checkboxInput("vac", "Show Vaccinated", value = TRUE, width = NULL),
   cas_selector = checkboxInput("cas", "Show Cases", value = TRUE, width = NULL),
+
+  total_selector= checkboxInput("Total", "Show total Vaccination", value = TRUE, width = NULL),
+  people_selector = checkboxInput("People", "Show People Vaccinated", value = TRUE, width = NULL),
+  
+  Death_selector= checkboxInput("Death", "Show # of death", value = TRUE, width = NULL),
+  Cases_selector = checkboxInput("Cases", "Show # of cases confirmed", value = TRUE, width = NULL),
   
   # Vaccine search interest
   search_geo_selector = selectInput("search_geo", "Select Search Locality",
@@ -55,12 +61,11 @@ ui = shiny::htmlTemplate(
                                choices = ISO_Name_Vec, 
                                selected = "ISR"),
   
-  map_choices=selectInput('choices','Which data to visualize:',
+  map_selector=selectInput('choices','Which data to visualize:',
                           choices = c('Cases','Death'),
-                          selected = c('Cases')),
-  
-  
-  ##leaflet_map = leafletOutput(outputId = "map")
+                          selected = c('Cases'))
   
 )
+
+
 
