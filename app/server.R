@@ -21,6 +21,7 @@ library(shiny)
 library(shinythemes)
 library(plotly)
 library(ggplot2)
+library(plyr)
 #can run RData directly to get the necessary date for the app
 #global.r will enable us to get new data everyday
 #update data with automated script
@@ -121,12 +122,12 @@ server = shinyServer(function(input, output) {
             y<-sum(a$people_vaccinated)
             return(c(x,y))
         }
-        library(plyr)
+        
         plot_data_ana<-ddply(ana_data,.(iso_code),add_var)
         
         # Library
         
-        library("tidyverse")
+        
         plot_data_ana2<-plot_data_ana%>%
             select(iso_code,V1,V2)%>%
             gather(key="variable",value="value",-iso_code)
@@ -178,7 +179,7 @@ server = shinyServer(function(input, output) {
         death<-death[death$Country.Region=="United Kingdom"|death$Country.Region=="China"|death$Country.Region=="Brazil"|death$Country.Region=="Israel"|death$Country.Region=="Italy"|death$Country.Region=="Mexico"|death$Country.Region=="US",]
         death<-ddply(death,.(Country.Region),add_function)  
         death_case<-cbind(death, cases[,2])
-        library("tidyverse")
+        
         
         
 
