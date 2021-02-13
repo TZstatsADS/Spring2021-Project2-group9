@@ -49,7 +49,15 @@ ui = shiny::htmlTemplate(
                 max = as.Date(tail(date_choices,1)),
                 value = as.Date('2020-04-01','%Y-%m-%d'),
                 timeFormat = "%Y-%m-%d",
-                animate = TRUE, step = 5)
+                animate = TRUE, step = 5),
+  
+  country_selector=selectInput("select_country", label = h3("Select Country"), 
+                               choices = ISO_Name_Vec, 
+                               selected = "ISR"),
+  
+  map_choices=selectInput('choices','Which data to visualize:',
+                          choices = c('Cases','Death'),
+                          selected = c('Cases')),
   
   
   ##leaflet_map = leafletOutput(outputId = "map")

@@ -151,6 +151,16 @@ global_Vaccine <- read.csv(Vaccine_URL)
 Recovered_URL<-"https://raw.githubusercontent.com/CSSEGISandData/COVID-19/master/csse_covid_19_data/csse_covid_19_time_series/time_series_covid19_recovered_global.csv"
 global_recovered <-read.csv(Recovered_URL)
 
+LookUp_Table_URL<-"https://raw.githubusercontent.com/CSSEGISandData/COVID-19/master/csse_covid_19_data/UID_ISO_FIPS_LookUp_Table.csv"
+lookup <-read.csv(LookUp_Table_URL)
+
+####lookup table
+CountryLookup<-lookup %>% select(iso3,Country_Region)
+uni<-CountryLookup[!duplicated(CountryLookup$Country_Region), ]
+#country selectorlistbox values
+Full_Country_Name_Vec<-c(uni$Country_Region)
+ISO_Name_Vec<-c(uni$iso3)
+names(ISO_Name_Vec) = Full_Country_Name_Vec
 
 #get aggregate cases 
 aggre_cases <- as.data.frame(data_transformer(global_cases))
