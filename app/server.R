@@ -37,9 +37,8 @@ server = shinyServer(function(input, output) {
     output$plot2  <- renderPlot({
 
         #store filters
-        #CountryFilter<- input$selected_country
-        CountryFilter<- "Israel"
-        COuntryISOFilter<-"ISR"
+        CountryFilter<- names(ISO_Name_Vec)[ISO_Name_Vec == input$select_country]
+        COuntryISOFilter<-input$select_country
         
         
         #make ready cases
@@ -94,7 +93,7 @@ server = shinyServer(function(input, output) {
         }
         
         plt<-plt + labs(
-            title = "Israel Timeline",
+            title = paste(CountryFilter, "Timeline", sep =" "),
             subtitle = "Period 2020-2021",
             caption = "Data: Johns Hopkins",
             x = "Date",
