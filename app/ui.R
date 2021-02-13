@@ -61,12 +61,9 @@ ui = shiny::htmlTemplate(
                                choices = ISO_Name_Vec, 
                                selected = "ISR"),
   
-  map_choices=selectInput('choices','Which data to visualize:',
+  map_selector=selectInput('choices','Which data to visualize:',
                           choices = c('Cases','Death'),
                           selected = c('Cases'))
-  
-  
-  ##leaflet_map = leafletOutput(outputId = "map")
   
 )
 
