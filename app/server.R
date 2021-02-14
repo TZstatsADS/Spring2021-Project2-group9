@@ -57,7 +57,7 @@ server = shinyServer(function(input, output) {
         #make ready recovered
         covid_dat_unique_country_timeseries_recovered <- global_recovered %>% filter(Country.Region == CountryFilter)
         final_df <- as.data.frame(t(covid_dat_unique_country_timeseries_recovered)) #transpose matrix
-		    final_df <-select(final_df, Values=1) #select first column
+		final_df <-select(final_df, Values=1) #select first column
         final_df <- tibble::rownames_to_column(final_df, "row_names")
         final_df <- final_df %>% slice(5:n())
         #change column names
@@ -72,9 +72,6 @@ server = shinyServer(function(input, output) {
             select(location,iso_code,date,people_fully_vaccinated,people_fully_vaccinated_per_hundred)
         Vacc_use_Country_Filter<- Vacc_use %>% filter(iso_code == COuntryISOFilter & !is.na(people_fully_vaccinated))
         Vacc_use_Country_Filter$date <- as.Date(Vacc_use_Country_Filter$date, format="%Y-%m-%d")
-        
-        
-
         
         #create plot
         plt<-ggplot()  
