@@ -204,4 +204,48 @@ server = shinyServer(function(input, output) {
         plt_death+theme(axis.text.x = element_text(angle = 45, hjust = 1))
     })
 
+    
+    #section5 
+    output$plot5<-renderPlot({
+        
+        US_vaccine<-US_vaccine%>%
+            select(location,date,total_vaccinations, people_vaccinated) 
+        US_vaccine<-US_vaccine[which(!is.na(US_vaccine$total_vaccinations)),]
+        US_vaccine<-US_vaccine[which(!is.na(US_vaccine$people_vaccinated)),]
+        US_vaccine$date<-as.character(US_vaccine$date)
+       
+        date<- as.Date(US_vaccine$date, format = "%Y%M%D")
+        US_vaccine$date<- date
+       
+       
+       
+       
+       StateFilter<-input$select_state
+       #make ready cases
+       state_timeseries_cases <- US_vaccine%>% filter(location == StateFilter)
+       state_timeseries_cases1 <- US_vaccine%>% filter(location == "California")
+       Colorlist <- c()
+       Labelslist <- c()
+       
+       plt<-ggplot()
+       if (input$state_total == TRUE){
+           plt<-plt + geom_line(data = state_timeseries_cases1, aes(x=date, y = total_vaccinations, colour="blue"))
+           Labelslist <- c(Labelslist, "total vaccinated")
+           Colorlist <-c(Colorlist,"blue")
+       }
+       
+       if (input$state_people == TRUE){
+           plt<-plt + geom_line(data = state_timeseries_cases, aes(x=date, y = people_vaccinated, colour="red"))
+           Labelslist <- c(Labelslist, "people vaccinated")
+           Colorlist <-c(Colorlist,"red")
+       }
+       
+       
+       
+       plt + scale_color_manual(name = "Legend",breaks = Colorlist, values =Colorlist , labels = Labelslist)
+       
+
+    })
+    
+    
 })
