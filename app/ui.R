@@ -66,7 +66,7 @@ ui = shiny::htmlTemplate(
                           choices = c('Cases','Death'),
                           selected = c('Cases')),
   
-  mortality_years=sliderInput("year_mortality", "Mortality Years", 2015, 2019, value = c(2018, 2019))
+  mortality_years=sliderInput("year_mortality", "Mortality Years", 2015, 2021, value = c(2018, 2021))
   
 )
 
