@@ -63,7 +63,7 @@
                     <li><a class="smoothscroll"  href="#data" title="data">Data Sources</a></li>
                 </ul>
     
-                <p>Perspiciatis hic praesentium nesciunt. Et neque a dolorum <a href='#0'>voluptatem</a> porro iusto sequi veritatis libero enim. Iusto id suscipit veritatis neque reprehenderit.</p>
+                <p>COVID 19 is a contagious disease caused by severe acute respitory syndrome coronavirus 2. The disease has since spread worldwide, leading to an ongoing pandemic. <a href='#0'> Group 9</a> created these analyses to provide insights on the pandemic using statistical methods in R.</p>
     
                 <ul class="header-nav__social">
                     <li>
@@ -154,16 +154,24 @@
       
         <div class="row section-header has-bottom-sep aos-init aos-animate" data-aos="fade-up">
             <div class="col-full">
-                <h2 class="subhead" style="color: #00008B">Let's map some covid data</h2>
+                <h2 class="subhead" style="color: #00008B">Timeseries of Data By Country</h2>
 
             </div>
         </div>
 
-      <div class="panel-body"> 
+      <div class="panel-body" style="width: 80%; float:right"> 
 		{{plotOutput('plot2')}}
       </div>
-	 
-      
+	  
+	  <div class="panel-body" style="width: 20%; float:left>
+		  <div class="row-block service-item aos-init aos-animate"> 
+			{{ country_selector }}
+		  </div>
+		  <div class="row-block service-item aos-init aos-animate" style="width: 15%; float:left> 
+			{{ mortality_years }}
+		  </div>
+      </div>
+	
       <div class="row services-list block-1-4 block-tab-full">
         <div class="col-block service-item aos-init aos-animate" data-aos="fade-up">
             {{ vac_selector }}
@@ -175,7 +183,7 @@
             {{ cas_selector }}
         </div>
         <div class="col-block service-item aos-init aos-animate" data-aos="fade-up">
-            {{ country_selector }}
+            {{ mor_selector }}
         </div>
       </div>
 

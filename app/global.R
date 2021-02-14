@@ -24,7 +24,6 @@ if (!require("shinythemes")) {
   install.packages("shinythemes")
   library(shinythemes)
 }
-
 if (!require("sf")) {
   install.packages("sf")
   library(sf)
@@ -85,6 +84,10 @@ if (!require("gtrendsR")) {
   install.packages("gtrendsR")
   library(gtrendsR)
 }
+if (!require("lubridate")) {
+  install.packages("lubridate")
+  library(lubridate)
+}
 #--------------------------------------------------------------------
 ###############################Define Functions#######################
 data_cooker <- function(df){
@@ -107,6 +110,12 @@ data_cooker <- function(df){
   return(df)
 }
 
+data_mortality_cooker <- function(df){
+  #input dataframe and change the Country/Region column into standard format
+  #df$country <- as.character(df$Country.Region)
+  df$country[df$country == "United States"] <- "US"
+  return(df)
+}
 
 data_transformer <- function(df) {
   #################################################################
@@ -153,6 +162,13 @@ global_recovered <-read.csv(Recovered_URL)
 
 LookUp_Table_URL<-"https://raw.githubusercontent.com/CSSEGISandData/COVID-19/master/csse_covid_19_data/UID_ISO_FIPS_LookUp_Table.csv"
 lookup <-read.csv(LookUp_Table_URL)
+
+Mortality_URL<-"https://raw.githubusercontent.com/akarlinsky/world_mortality/main/world_mortality.csv"
+global_mortality <-read.csv(Mortality_URL)
+
+####global mortality cleanup
+global_mortality_timeseries_cleaned <-data_mortality_cooker(select(global_mortality, country=1,year=year,time=time,unit=time_unit,deaths=deaths))
+
 
 ####lookup table
 CountryLookup<-lookup %>% select(iso3,Country_Region)

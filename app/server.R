@@ -26,6 +26,7 @@ library(dygraphs)
 library(tidyr)
 library(xts)
 library(gtrendsR)
+library(lubridate)
 #can run RData directly to get the necessary date for the app
 #global.r will enable us to get new data everyday
 #update data with automated script
@@ -44,21 +45,23 @@ server = shinyServer(function(input, output) {
         
         #make ready cases
         covid_dat_unique_country_timeseries_cases <- global_cases%>% filter(Country.Region == CountryFilter)
-        cases_df <- as.data.frame(t(covid_dat_unique_country_timeseries_cases))
+        cases_df <- as.data.frame(t(covid_dat_unique_country_timeseries_cases)) #transpose matrix
+		    cases_df <-select(cases_df, Values=1) #select first column
         cases_df <- tibble::rownames_to_column(cases_df, "row_names")
         cases_df <- cases_df %>% slice(5:n())
         #change column names
-        cases<-select(cases_df, D=row_names, C=V1)
+        cases<-select(cases_df, D=row_names, C=Values)
         cases$D <- as.Date(cases$D, format="X%m.%d.%y")
         cases$C <- as.integer(cases$C)
         
         #make ready recovered
         covid_dat_unique_country_timeseries_recovered <- global_recovered %>% filter(Country.Region == CountryFilter)
-        final_df <- as.data.frame(t(covid_dat_unique_country_timeseries_recovered))
+        final_df <- as.data.frame(t(covid_dat_unique_country_timeseries_recovered)) #transpose matrix
+		    final_df <-select(final_df, Values=1) #select first column
         final_df <- tibble::rownames_to_column(final_df, "row_names")
         final_df <- final_df %>% slice(5:n())
         #change column names
-        recovered<-select(final_df, D=row_names, R=V1)
+        recovered<-select(final_df, D=row_names, R=Values)
         recovered$D <- as.Date(recovered$D, format="X%m.%d.%y")
         recovered$R <- as.integer(recovered$R)
         
@@ -69,6 +72,9 @@ server = shinyServer(function(input, output) {
             select(location,iso_code,date,people_fully_vaccinated,people_fully_vaccinated_per_hundred)
         Vacc_use_Country_Filter<- Vacc_use %>% filter(iso_code == COuntryISOFilter & !is.na(people_fully_vaccinated))
         Vacc_use_Country_Filter$date <- as.Date(Vacc_use_Country_Filter$date, format="%Y-%m-%d")
+        
+        
+
         
         #create plot
         plt<-ggplot()  
@@ -91,6 +97,26 @@ server = shinyServer(function(input, output) {
             plt<-plt + geom_line(data = cases, aes(x=D, y = C, colour="black"))
             Labelslist <- c(Labelslist, "Cases")
             Colorlist <-c(Colorlist,"black")
+        }
+        
+        if (input$mor == TRUE){
+          
+          #make mortality ready
+          country_mortality <- global_mortality_timeseries_cleaned%>% filter(country == CountryFilter)
+          #apply year filters
+          country_mortality <- country_mortality%>% filter(year >= input$year_mortality[1])
+          country_mortality <- country_mortality%>% filter(year <= input$year_mortality[2])
+          
+          #check if unit is weekly or monthly
+          mortality_df <- transform(country_mortality, D= as.Date(
+            paste(country_mortality$year, country_mortality$time, 1), #1 stands for monday
+            format = "%Y %U %u"
+          ))
+          
+          
+          plt<-plt + geom_line(data = mortality_df, aes(x=D, y = deaths, colour="green"))
+          Labelslist <- c(Labelslist, "Mortality Before COVID")
+          Colorlist <-c(Colorlist,"green")
         }
         
         plt<-plt + labs(
