@@ -63,7 +63,7 @@
                     <li><a class="smoothscroll"  href="#data" title="data">Data Sources</a></li>
                 </ul>
     
-                <p>Perspiciatis hic praesentium nesciunt. Et neque a dolorum <a href='#0'>voluptatem</a> porro iusto sequi veritatis libero enim. Iusto id suscipit veritatis neque reprehenderit.</p>
+                <p>COVID 19 is a contagious disease caused by severe acute respitory syndrome coronavirus 2. The disease has since spread worldwide, leading to an ongoing pandemic. <a href='#0'> Group 9</a> created these analyses to provide insights on the pandemic using statistical methods in R.</p>
     
                 <ul class="header-nav__social">
                     <li>
@@ -100,13 +100,13 @@
 
             <div class="row home-content__main">
 
-                <h3>Welcome to Group 9</h3>
+                <h3>Welcome to Group 9's Shiny App</h3>
 
                 <h1>
-                    We are a creative group <br>
-                    of people who design <br>
-                    influential brands and <br>
-                    digital experiences.
+                    We present our insights <br>
+                    on the COVID 19 pandemic <br>
+                    using statistical methods <br>
+                    in R.
                 </h1>
 
                 <div class="home-content__buttons">
@@ -154,16 +154,24 @@
       
         <div class="row section-header has-bottom-sep aos-init aos-animate" data-aos="fade-up">
             <div class="col-full">
-                <h2 class="subhead" style="color: #00008B">Let's map some covid data</h2>
+                <h2 class="subhead" style="color: #00008B">Timeseries of Data By Country</h2>
 
             </div>
         </div>
 
-      <div class="panel-body"> 
+      <div class="panel-body" style="width: 80%; float:right"> 
 		{{plotOutput('plot2')}}
       </div>
-	 
-      
+	  
+	  <div class="panel-body" style="width: 20%; float:left>
+		  <div class="row-block service-item aos-init aos-animate"> 
+			{{ country_selector }}
+		  </div>
+		  <div class="row-block service-item aos-init aos-animate" style="width: 15%; float:left> 
+			{{ mortality_years }}
+		  </div>
+      </div>
+	
       <div class="row services-list block-1-4 block-tab-full">
         <div class="col-block service-item aos-init aos-animate" data-aos="fade-up">
             {{ vac_selector }}
@@ -175,7 +183,7 @@
             {{ cas_selector }}
         </div>
         <div class="col-block service-item aos-init aos-animate" data-aos="fade-up">
-            {{ country_selector }}
+            {{ mor_selector }}
         </div>
       </div>
 
@@ -233,6 +241,8 @@
         <div class="row section-header has-bottom-sep aos-init aos-animate" data-aos="fade-up">
             <div class="col-full">
                <h1 class="subhead"> discussion about how death and cases confirmed related to vaccination</h1>
+            </div>
+        </div>
       <div class="panel-body"> 
 		{{plotOutput('plot4')}}
       </div>
@@ -273,12 +283,12 @@
     
     <!-- sources
     ================================================== -->
-    <section id='data' class="s-data" style="background-color:red">
+    <section id='data' class="s-data" style="background-color:maroon">
 
         <div class="row section-header has-bottom-sep" data-aos="fade-up">
             <div class="col-full">
-                <h3 class="subhead">What We Do</h3>
-                <h1 class="display-2">We’ve got everything you need to launch and grow your business</h1>
+                <h3 class="subhead">Data Sources</h3>
+                <h1 class="display-2">The combination of the following data sources power our app</h1>
             </div>
         </div> <!-- end section-header -->
 
@@ -289,10 +299,10 @@
                     <i class="icon-paint-brush"></i>
                 </div>
                 <div class="service-text">
-                    <h3 class="h2">Brand Identity</h3>
-                    <p>Nemo cupiditate ab quibusdam quaerat impedit magni. Earum suscipit ipsum laudantium. 
-                    Quo delectus est. Maiores voluptas ab sit natus veritatis ut. Debitis nulla cumque veritatis.
-                    Sunt suscipit voluptas ipsa in tempora esse soluta sint.
+                    <h3 class="h2">JHU CSSE COVID-19 Data</h3>
+                    <a href="https://github.com/CSSEGISandData/COVID-19">Github</a>
+                    <p>This data was the cornerstone of our App. 
+                    It was used in the timeseries, map, and barcharts.
                     </p>
                 </div>
             </div>
@@ -302,10 +312,9 @@
                     <i class="icon-group"></i>
                 </div>
                 <div class="service-text">
-                    <h3 class="h2">Illustration</h3>
-                    <p>Nemo cupiditate ab quibusdam quaerat impedit magni. Earum suscipit ipsum laudantium. 
-                    Quo delectus est. Maiores voluptas ab sit natus veritatis ut. Debitis nulla cumque veritatis.
-                    Sunt suscipit voluptas ipsa in tempora esse soluta sint.
+                    <h3 class="h2">Our World in Data</h3>
+                    <a href="https://github.com/owid/covid-19-data/tree/master/public/data">Github</a>
+                    <p>Vaccination data was pulled from this source. 
                     </p>
                 </div>
             </div>
@@ -315,10 +324,9 @@
                     <i class="icon-megaphone"></i>
                 </div>  
                 <div class="service-text">
-                    <h3 class="h2">Marketing</h3>
-                    <p>Nemo cupiditate ab quibusdam quaerat impedit magni. Earum suscipit ipsum laudantium. 
-                    Quo delectus est. Maiores voluptas ab sit natus veritatis ut. Debitis nulla cumque veritatis.
-                    Sunt suscipit voluptas ipsa in tempora esse soluta sint.
+                    <h3 class="h2">World Mortality Dataset</h3>
+                    <a href="https://github.com/akarlinsky/world_mortality">Github</a>
+                    <p>Mortality data set pools world mortality data from multiple sources.
                     </p>
                 </div>
             </div>
@@ -329,9 +337,9 @@
                 </div>
                 <div class="service-text">
                     <h3 class="h2">Web Design</h3>
-                    <p>Nemo cupiditate ab quibusdam quaerat impedit magni. Earum suscipit ipsum laudantium. 
-                    Quo delectus est. Maiores voluptas ab sit natus veritatis ut. Debitis nulla cumque veritatis.
-                    Sunt suscipit voluptas ipsa in tempora esse soluta sint.
+                    <a href="https://github.com/vivekkatial/uber_shiny">Github</a>
+                    <p>Our design came from this source found in the gallery of rstudio.com.
+                    It uses shiny html templates to build visually appealing UI's.
                     </p>
                 </div>
             </div>
@@ -374,7 +382,11 @@
 
             <div class="col-twelve">
                 <div class="copyright">
-                    <span>Columbia Applied Data Science 2021</span> 	
+                    <span>Steven Friedman</span>
+                    <span>Yuqi Xing</span>
+                    <span>Shuqi Yu</span>
+                    <span>Ruize Yu</span>
+                    <span>Dennis Shpits</span> <br> <span>Columbia Applied Data Science 2021</span>
                 </div>
 
                 <div class="go-top">
