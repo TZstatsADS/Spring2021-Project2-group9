@@ -104,15 +104,24 @@ server = shinyServer(function(input, output) {
           country_mortality <- country_mortality%>% filter(year >= input$year_mortality[1])
           country_mortality <- country_mortality%>% filter(year <= input$year_mortality[2])
           
-          #check if unit is weekly or monthly
-          mortality_df <- transform(country_mortality, D= as.Date(
+          #Get the type of unit. Months,weeks, or quarters? Use the first record
+          unittype<-country_mortality$unit[1]
+          if (unittype == "weekly"){
+            mortality_df <- transform(country_mortality, D= as.Date(
             paste(country_mortality$year, country_mortality$time, 1), #1 stands for monday
             format = "%Y %U %u"
-          ))
+            ))
+          } else if (typeunit == "monthly") {
+            mortality_df <- transform(country_mortality, D= as.Date(
+            paste(country_mortality$year, country_mortality$time, 1), #1 stands for first day of the month
+            format = "%Y %m %d"
+            ))
+          }
+          
           
           
           plt<-plt + geom_line(data = mortality_df, aes(x=D, y = deaths, colour="green"))
-          Labelslist <- c(Labelslist, "Mortality Before COVID")
+          Labelslist <- c(Labelslist, "Mortality")
           Colorlist <-c(Colorlist,"green")
         }
         
