@@ -46,7 +46,7 @@ server = shinyServer(function(input, output) {
         #make ready cases
         covid_dat_unique_country_timeseries_cases <- global_cases%>% filter(Country.Region == CountryFilter)
         cases_df <- as.data.frame(t(covid_dat_unique_country_timeseries_cases)) #transpose matrix
-		    cases_df <-select(cases_df, Values=1) #select first column
+        cases_df <-select(cases_df, Values=1) #select first column
         cases_df <- tibble::rownames_to_column(cases_df, "row_names")
         cases_df <- cases_df %>% slice(5:n())
         #change column names
@@ -57,7 +57,7 @@ server = shinyServer(function(input, output) {
         #make ready recovered
         covid_dat_unique_country_timeseries_recovered <- global_recovered %>% filter(Country.Region == CountryFilter)
         final_df <- as.data.frame(t(covid_dat_unique_country_timeseries_recovered)) #transpose matrix
-		final_df <-select(final_df, Values=1) #select first column
+        final_df <-select(final_df, Values=1) #select first column
         final_df <- tibble::rownames_to_column(final_df, "row_names")
         final_df <- final_df %>% slice(5:n())
         #change column names
