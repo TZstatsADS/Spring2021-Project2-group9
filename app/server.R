@@ -177,7 +177,8 @@ server = shinyServer(function(input, output) {
     if(!is.null(input$choices)){
       if(input$choices == "cases"){
         return(aggre_cases_copy)
-        
+      }else if(input$choices == "vaccination"){
+        return(aggre_vaccination_copy)  
       }else{
         return(aggre_death_copy)
       }}
