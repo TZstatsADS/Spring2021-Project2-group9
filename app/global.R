@@ -179,28 +179,32 @@ data_transformer2 <- function(df) {
 "Dong E, Du H, Gardner L. An interactive web-based dashboard to track COVID-19 in real time. 
 Lancet Inf Dis. 20(5):533-534. doi: 10.1016/S1473-3099(20)30120-1"
 #get the daily global cases data from API
-Cases_URL <- "https://raw.githubusercontent.com/CSSEGISandData/COVID-19/master/csse_covid_19_data/csse_covid_19_time_series/time_series_covid19_confirmed_global.csv"
+#The URLs are too slow, use cached files.
+#Cases_URL <- "https://raw.githubusercontent.com/CSSEGISandData/COVID-19/master/csse_covid_19_data/csse_covid_19_time_series/time_series_covid19_confirmed_global.csv"
+Cases_URL <- "./csv_data/time_series_covid19_confirmed_global.csv"
 global_cases <- read.csv(Cases_URL)
 
 #get the daily global deaths data from API
-Death_URL <- "https://raw.githubusercontent.com/CSSEGISandData/COVID-19/master/csse_covid_19_data/csse_covid_19_time_series/time_series_covid19_deaths_global.csv"
+#Death_URL <- "https://raw.githubusercontent.com/CSSEGISandData/COVID-19/master/csse_covid_19_data/csse_covid_19_time_series/time_series_covid19_deaths_global.csv"
+Death_URL <- "./csv_data/time_series_covid19_deaths_global.csv"
 global_death <- read.csv(Death_URL)
 
-Vaccine_URL <- "https://raw.githubusercontent.com/owid/covid-19-data/master/public/data/vaccinations/vaccinations.csv"
+#Vaccine_URL <- "https://raw.githubusercontent.com/owid/covid-19-data/master/public/data/vaccinations/vaccinations.csv"
+Vaccine_URL <- "./csv_data/vaccinations.csv"
 global_Vaccine <- read.csv(Vaccine_URL)
 
 
-Recovered_URL<-"https://raw.githubusercontent.com/CSSEGISandData/COVID-19/master/csse_covid_19_data/csse_covid_19_time_series/time_series_covid19_recovered_global.csv"
+#Recovered_URL<-"https://raw.githubusercontent.com/CSSEGISandData/COVID-19/master/csse_covid_19_data/csse_covid_19_time_series/time_series_covid19_recovered_global.csv"
+Recovered_URL<-"./csv_data/time_series_covid19_recovered_global.csv"
 global_recovered <-read.csv(Recovered_URL)
 
-LookUp_Table_URL<-"https://raw.githubusercontent.com/CSSEGISandData/COVID-19/master/csse_covid_19_data/UID_ISO_FIPS_LookUp_Table.csv"
+#LookUp_Table_URL<-"https://raw.githubusercontent.com/CSSEGISandData/COVID-19/master/csse_covid_19_data/UID_ISO_FIPS_LookUp_Table.csv"
+LookUp_Table_URL<-"./csv_data/UID_ISO_FIPS_LookUp_Table.csv"
 lookup <-read.csv(LookUp_Table_URL)
 
-Mortality_URL<-"https://raw.githubusercontent.com/akarlinsky/world_mortality/main/world_mortality.csv"
+#Mortality_URL<-"https://raw.githubusercontent.com/akarlinsky/world_mortality/main/world_mortality.csv"
+Mortality_URL<-"./csv_data/world_mortality.csv"
 global_mortality <-read.csv(Mortality_URL)
-
-US_vaccine_URL<-"https://raw.githubusercontent.com/owid/covid-19-data/master/public/data/vaccinations/us_state_vaccinations.csv"
-US_vaccine<-read.csv(US_vaccine_URL)
 
 ####global mortality cleanup
 global_mortality_timeseries_cleaned <-data_mortality_cooker(select(global_mortality, country=1,year=year,time=time,unit=time_unit,deaths=deaths))
