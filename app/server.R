@@ -35,6 +35,17 @@ source("global.R")
 
 server = shinyServer(function(input, output) {
     
+    output$total_cases <- renderText({
+        round(sum(aggre_cases[length(aggre_cases)])/1000000,1)
+    })
+  
+    output$total_death  <- renderText({
+        round(sum(aggre_death[length(aggre_death)])/1000000,1)
+    })
+  
+    output$total_recovered  <- renderText({
+        round(sum(aggre_recovered[length(aggre_recovered)])/1000000,1)
+    })
     
     output$plot2  <- renderPlot({
 
@@ -176,7 +187,8 @@ server = shinyServer(function(input, output) {
   maxTotal<- reactive(max(data_countries()%>%select_if(is.numeric), na.rm = T))    
   #color palette
   pal <- reactive(colorNumeric(c("#FFFFFFFF" ,rev(inferno(256))), domain = c(0,log(binning(maxTotal())))))    
-  
+  pal2 <- reactive(colorNumeric(c("#FFFFFFFF" ,rev(viridis(256))), domain = c(0,log(binning(maxTotal()))))) 
+    
   output$map <- renderLeaflet({
     map <-  leaflet(countries) %>%
       addProviderTiles("Stadia.Outdoors", options = providerTileOptions(noWrap = TRUE)) %>%
@@ -200,13 +212,47 @@ server = shinyServer(function(input, output) {
                               "Total Cases: ",
                               aggre_cases_join[[select_date]],
                               "<br><strong>")
-      leafletProxy("map", data = aggre_cases_join)%>%
+      leafletProxy("map", data = aggre_cases_join)%>% clearControls()%>%
         addPolygons(fillColor = pal()(log((aggre_cases_join[[select_date]])+1)),
                     layerId = ~NAME,
                     fillOpacity = 1,
                     color = "#BDBDC3",
                     weight = 1,
-                    popup = country_popup) 
+                    popup = country_popup) %>%
+        
+        addLegend("bottomright",
+                  colors = c("#FCFFA4FF","#F67E14FF","#BC3754FF","#88226AFF","#540F6DFF","#010108FF"),
+                  labels = c("1",'1k','10k','100k','1m','10m'),
+                  title = "total cases",
+                  opacity = 1) 
+        
+     }else if(input$choices == "vaccination"){
+      
+       aggre_vaccination_join <- merge(countries,
+                                      data_countries(),
+                                      by.x = 'NAME',
+                                      by.y = 'country_names',sort = FALSE)
+      
+       country_popup <- paste0("<strong>Country: </strong>",
+                              aggre_vaccination_join$NAME,
+                              "<br><strong>",
+                              "Total Vaccination: ",
+                              aggre_vaccination_join[[select_date]],
+                              "<br><strong>")
+      
+       leafletProxy("map", data = aggre_vaccination_join)%>% clearControls()%>%
+         addPolygons(fillColor = pal2()(log((aggre_vaccination_join[[select_date]])+1)),
+                    layerId = ~NAME,
+                    fillOpacity = 1,
+                    color = "#BDBDC3",
+                    weight = 1,
+                    popup = country_popup)%>%
+        
+         addLegend("bottomright",
+                  colors = c('#FDE725FF',"#D0E11CFF","#29AF7FFF","#1F948CFF","#297B8EFF","#481F70FF"),
+                  labels = c('<0.1%','1%','5%','10%','20%','50%'),
+                  title = "total vaccination rate",
+                  opacity = 1)
     } else {
       #join the two dfs together
       aggre_death_join<- merge(countries,
@@ -222,13 +268,19 @@ server = shinyServer(function(input, output) {
                               aggre_death_join[[select_date]],
                               "<br><strong>")
       
-      leafletProxy("map", data = aggre_death_join)%>%
+      leafletProxy("map", data = aggre_death_join)%>% clearControls()%>%
         addPolygons(fillColor = pal()(log((aggre_death_join[[select_date]])+1)),
                     layerId = ~NAME,
                     fillOpacity = 1,
                     color = "#BDBDC3",
                     weight = 1,
-                    popup = country_popup)
+                    popup = country_popup)%>%
+        
+        addLegend("bottomright",
+                  colors = c("#FCFFA4FF","#F67E14FF","#BC3754FF","#88226AFF","#540F6DFF","#010108FF"),
+                  labels = c("1",'100','1k','10k','100k','500k'),
+                  title = "total death",
+                  opacity = 1) 
       
     }
   })    
