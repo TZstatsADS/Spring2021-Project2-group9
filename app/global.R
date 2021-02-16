@@ -110,6 +110,25 @@ data_cooker <- function(df){
   return(df)
 }
 
+data_cooker2 <- function(df){
+  df$location <- as.character(df$location)
+  df$location[df$location == "Congo (Kinshasa)"] <- "Dem. Rep. Congo"
+  df$location[df$location == "Congo (Brazzaville)"] <- "Congo"
+  df$location[df$location == "Central African Republic"] <- "Central African Rep."
+  df$location[df$location == "Equatorial Guinea"] <- "Eq. Guinea"
+  df$location[df$location == "Western Sahara"]<-"W. Sahara"
+  df$location[df$location == "Eswatini"] <- "eSwatini"
+  df$location[df$location == "Taiwan*"] <- "Taiwan"
+  df$location[df$location == "Cote d'Ivoire"] <-"Côte d'Ivoire"
+  df$location[df$location == "Korea, South"] <- "South Korea"
+  df$location[df$location == "Bosnia and Herzegovina"] <- "Bosnia and Herz."
+  df$location[df$location == "United States"] <- "United States of America"
+  df$location[df$location == "Burma"]<-"Myanmar"
+  df$location[df$location == "Holy See"]<-"Vatican"
+  df$location[df$location =="South Sudan"]<-"S. Sudan"
+  return(df)
+}
+
 data_mortality_cooker <- function(df){
   #input dataframe and change the Country/Region column into standard format
   #df$country <- as.character(df$Country.Region)
@@ -140,30 +159,51 @@ data_transformer <- function(df) {
   colnames(aggre_df) <- date_choices
   return(aggre_df)
 }
+
+data_transformer2 <- function(df) {
+  df <- data_cooker2(df)
+  
+  df <- df %>% select(location,date,total_vaccinations_per_hundred) %>% fill(total_vaccinations_per_hundred) %>%
+    spread(date,total_vaccinations_per_hundred)
+  
+  aggre_df <- df %>% group_by(location) %>% summarise_all(sum)
+  
+  aggre_df <- aggre_df %>% remove_rownames %>% 
+    tibble::column_to_rownames(var="location")
+  
+  return(aggre_df)
+}
 #--------------------------------------------------------------------
 ###############################Data Preparation#######################
 #Data Sources
 "Dong E, Du H, Gardner L. An interactive web-based dashboard to track COVID-19 in real time. 
 Lancet Inf Dis. 20(5):533-534. doi: 10.1016/S1473-3099(20)30120-1"
 #get the daily global cases data from API
-Cases_URL <- "https://raw.githubusercontent.com/CSSEGISandData/COVID-19/master/csse_covid_19_data/csse_covid_19_time_series/time_series_covid19_confirmed_global.csv"
+#The URLs are too slow, use cached files.
+#Cases_URL <- "https://raw.githubusercontent.com/CSSEGISandData/COVID-19/master/csse_covid_19_data/csse_covid_19_time_series/time_series_covid19_confirmed_global.csv"
+Cases_URL <- "./csv_data/time_series_covid19_confirmed_global.csv"
 global_cases <- read.csv(Cases_URL)
 
 #get the daily global deaths data from API
-Death_URL <- "https://raw.githubusercontent.com/CSSEGISandData/COVID-19/master/csse_covid_19_data/csse_covid_19_time_series/time_series_covid19_deaths_global.csv"
+#Death_URL <- "https://raw.githubusercontent.com/CSSEGISandData/COVID-19/master/csse_covid_19_data/csse_covid_19_time_series/time_series_covid19_deaths_global.csv"
+Death_URL <- "./csv_data/time_series_covid19_deaths_global.csv"
 global_death <- read.csv(Death_URL)
 
-Vaccine_URL <- "https://raw.githubusercontent.com/owid/covid-19-data/master/public/data/vaccinations/vaccinations.csv"
+#Vaccine_URL <- "https://raw.githubusercontent.com/owid/covid-19-data/master/public/data/vaccinations/vaccinations.csv"
+Vaccine_URL <- "./csv_data/vaccinations.csv"
 global_Vaccine <- read.csv(Vaccine_URL)
 
 
-Recovered_URL<-"https://raw.githubusercontent.com/CSSEGISandData/COVID-19/master/csse_covid_19_data/csse_covid_19_time_series/time_series_covid19_recovered_global.csv"
+#Recovered_URL<-"https://raw.githubusercontent.com/CSSEGISandData/COVID-19/master/csse_covid_19_data/csse_covid_19_time_series/time_series_covid19_recovered_global.csv"
+Recovered_URL<-"./csv_data/time_series_covid19_recovered_global.csv"
 global_recovered <-read.csv(Recovered_URL)
 
-LookUp_Table_URL<-"https://raw.githubusercontent.com/CSSEGISandData/COVID-19/master/csse_covid_19_data/UID_ISO_FIPS_LookUp_Table.csv"
+#LookUp_Table_URL<-"https://raw.githubusercontent.com/CSSEGISandData/COVID-19/master/csse_covid_19_data/UID_ISO_FIPS_LookUp_Table.csv"
+LookUp_Table_URL<-"./csv_data/UID_ISO_FIPS_LookUp_Table.csv"
 lookup <-read.csv(LookUp_Table_URL)
 
-Mortality_URL<-"https://raw.githubusercontent.com/akarlinsky/world_mortality/main/world_mortality.csv"
+#Mortality_URL<-"https://raw.githubusercontent.com/akarlinsky/world_mortality/main/world_mortality.csv"
+Mortality_URL<-"./csv_data/world_mortality.csv"
 global_mortality <-read.csv(Mortality_URL)
 
 ####global mortality cleanup
@@ -186,6 +226,10 @@ aggre_death <- as.data.frame(data_transformer(global_death))
 date_choices <- as.Date(colnames(aggre_cases),format = '%Y-%m-%d')
 #define country_names
 country_names_choices <- rownames(aggre_cases)
+
+aggre_recovered <- as.data.frame(data_transformer(global_recovered))
+
+aggre_vaccination <- as.data.frame(data_transformer2(global_Vaccine))
 
 #Download the spatial polygons dataframe in this link
 # https://www.naturalearthdata.com/downloads/50m-cultural-vectors/50m-admin-0-countries-2/
@@ -212,6 +256,9 @@ aggre_cases_copy$country_names <- as.character(rownames(aggre_cases_copy))
 #make a copy of aggre_death dataframe
 aggre_death_copy <- as.data.frame(aggre_death)
 aggre_death_copy$country_names <- as.character(rownames(aggre_death_copy))
+
+aggre_vaccination_copy <- as.data.frame(aggre_vaccination)
+aggre_vaccination_copy$country_names <- as.character(rownames(aggre_vaccination_copy))
 
 binning<- function(x) {10^(ceiling(log10(x)))}
 
