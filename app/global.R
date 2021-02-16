@@ -110,6 +110,25 @@ data_cooker <- function(df){
   return(df)
 }
 
+data_cooker2 <- function(df){
+  df$location <- as.character(df$location)
+  df$location[df$location == "Congo (Kinshasa)"] <- "Dem. Rep. Congo"
+  df$location[df$location == "Congo (Brazzaville)"] <- "Congo"
+  df$location[df$location == "Central African Republic"] <- "Central African Rep."
+  df$location[df$location == "Equatorial Guinea"] <- "Eq. Guinea"
+  df$location[df$location == "Western Sahara"]<-"W. Sahara"
+  df$location[df$location == "Eswatini"] <- "eSwatini"
+  df$location[df$location == "Taiwan*"] <- "Taiwan"
+  df$location[df$location == "Cote d'Ivoire"] <-"Côte d'Ivoire"
+  df$location[df$location == "Korea, South"] <- "South Korea"
+  df$location[df$location == "Bosnia and Herzegovina"] <- "Bosnia and Herz."
+  df$location[df$location == "United States"] <- "United States of America"
+  df$location[df$location == "Burma"]<-"Myanmar"
+  df$location[df$location == "Holy See"]<-"Vatican"
+  df$location[df$location =="South Sudan"]<-"S. Sudan"
+  return(df)
+}
+
 data_mortality_cooker <- function(df){
   #input dataframe and change the Country/Region column into standard format
   #df$country <- as.character(df$Country.Region)
@@ -138,6 +157,20 @@ data_transformer <- function(df) {
   date_choices <- as.Date(date_name,format = 'X%m.%d.%y')
   #assign column nam
   colnames(aggre_df) <- date_choices
+  return(aggre_df)
+}
+
+data_transformer2 <- function(df) {
+  df <- data_cooker2(df)
+  
+  df <- df %>% select(location,date,total_vaccinations_per_hundred) %>% fill(total_vaccinations_per_hundred) %>%
+    spread(date,total_vaccinations_per_hundred)
+  
+  aggre_df <- df %>% group_by(location) %>% summarise_all(sum)
+  
+  aggre_df <- aggre_df %>% remove_rownames %>% 
+    tibble::column_to_rownames(var="location")
+  
   return(aggre_df)
 }
 #--------------------------------------------------------------------
@@ -187,6 +220,8 @@ date_choices <- as.Date(colnames(aggre_cases),format = '%Y-%m-%d')
 #define country_names
 country_names_choices <- rownames(aggre_cases)
 
+aggre_vaccination <- as.data.frame(data_transformer2(global_Vaccine))
+
 #Download the spatial polygons dataframe in this link
 # https://www.naturalearthdata.com/downloads/50m-cultural-vectors/50m-admin-0-countries-2/
 
@@ -212,6 +247,9 @@ aggre_cases_copy$country_names <- as.character(rownames(aggre_cases_copy))
 #make a copy of aggre_death dataframe
 aggre_death_copy <- as.data.frame(aggre_death)
 aggre_death_copy$country_names <- as.character(rownames(aggre_death_copy))
+
+aggre_vaccination_copy <- as.data.frame(aggre_vaccination)
+aggre_vaccination_copy$country_names <- as.character(rownames(aggre_vaccination_copy))
 
 binning<- function(x) {10^(ceiling(log10(x)))}
 
