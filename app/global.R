@@ -223,6 +223,8 @@ date_choices <- as.Date(colnames(aggre_cases),format = '%Y-%m-%d')
 #define country_names
 country_names_choices <- rownames(aggre_cases)
 
+aggre_recovered <- as.data.frame(data_transformer(global_recovered))
+
 aggre_vaccination <- as.data.frame(data_transformer2(global_Vaccine))
 
 #Download the spatial polygons dataframe in this link
