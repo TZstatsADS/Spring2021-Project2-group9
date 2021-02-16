@@ -168,19 +168,16 @@ server = shinyServer(function(input, output) {
         
         dygraph(data) %>%
             dyRangeSelector()
-    })
-    
-    
-    
+    })  
     
     data_countries <- reactive({
-    if(!is.null(input$choices)){
-      if(input$choices == "cases"){
-        return(aggre_cases_copy)
-      }else if(input$choices == "vaccination"){
-        return(aggre_vaccination_copy)  
-      }else{
-        return(aggre_death_copy)
+        if(!is.null(input$choices)){
+        if(input$choices == "cases"){
+            return(aggre_cases_copy)
+        }else if(input$choices == "vaccination"){
+            return(aggre_vaccination_copy)  
+        }else{
+            return(aggre_death_copy)
       }}
   })
   
@@ -221,7 +218,7 @@ server = shinyServer(function(input, output) {
                     weight = 1,
                     popup = country_popup) %>%
         
-        addLegend("bottomright",
+        leaflet::addLegend("bottomright",
                   colors = c("#FCFFA4FF","#F67E14FF","#BC3754FF","#88226AFF","#540F6DFF","#010108FF"),
                   labels = c("1",'1k','10k','100k','1m','10m'),
                   title = "total cases",
@@ -249,7 +246,7 @@ server = shinyServer(function(input, output) {
                     weight = 1,
                     popup = country_popup)%>%
         
-         addLegend("bottomright",
+         leaflet::addLegend("bottomright",
                   colors = c('#FDE725FF',"#D0E11CFF","#29AF7FFF","#1F948CFF","#297B8EFF","#481F70FF"),
                   labels = c('<0.1%','1%','5%','10%','20%','50%'),
                   title = "total vaccination rate",
@@ -277,7 +274,7 @@ server = shinyServer(function(input, output) {
                     weight = 1,
                     popup = country_popup)%>%
         
-        addLegend("bottomright",
+        leaflet::addLegend("bottomright",
                   colors = c("#FCFFA4FF","#F67E14FF","#BC3754FF","#88226AFF","#540F6DFF","#010108FF"),
                   labels = c("1",'100','1k','10k','100k','500k'),
                   title = "total death",
@@ -384,6 +381,44 @@ server = shinyServer(function(input, output) {
         
         }
         plt_death+theme(axis.text.x = element_text(angle = 45, hjust = 1))
+    })
+    
+  output$plot5<-renderPlot({
+  
+    US_vaccine<-US_vaccine%>%
+        select(location,date,total_vaccinations, people_vaccinated) 
+    US_vaccine<-US_vaccine[which(!is.na(US_vaccine$total_vaccinations)),]
+    US_vaccine<-US_vaccine[which(!is.na(US_vaccine$people_vaccinated)),]
+    US_vaccine$date<-as.character(US_vaccine$date)
+  
+    date<- as.Date(US_vaccine$date, format = "%Y-%m-%d")
+    US_vaccine$date1<- date 
+  
+    StateFilter<-input$select_state
+    #make ready cases
+    state_timeseries_cases <- US_vaccine%>% filter(location == StateFilter)
+  
+    Colorlist <- c()
+    Labelslist <- c()
+  
+    plt<-ggplot()
+    if (input$state_total == TRUE){
+        plt<-plt + geom_line(data = state_timeseries_cases, aes(x=date, y = total_vaccinations, colour="blue"))
+        Labelslist <- c(Labelslist, "total vaccinated")
+        Colorlist <-c(Colorlist,"blue")
+    }
+  
+    if (input$state_people == TRUE){
+        plt<-plt + geom_line(data = state_timeseries_cases, aes(x=date, y = people_vaccinated, colour="red"))
+        Labelslist <- c(Labelslist, "people vaccinated")
+        Colorlist <-c(Colorlist,"red")
+    }
+  
+  
+  
+    plt + scale_color_manual(name = "Legend",breaks = Colorlist, values =Colorlist , labels = Labelslist)
+  
+  
     })
 
 })
