@@ -78,7 +78,7 @@ ui = shiny::htmlTemplate(
   
   state_total_selector= checkboxInput("state_total", "total vaccines of the state", value = TRUE, width = NULL),
   state_people_selector = checkboxInput("state_people", "total state people vaccinated", value = TRUE, width = NULL),
-  state_selector=selectInput("select_state", label = h3("Select state"), 
+  State_selector=selectInput("select_state", label = h3("Select state"), 
                            choices = UC_vaccines$location, 
                            selected = "New York"),
   
