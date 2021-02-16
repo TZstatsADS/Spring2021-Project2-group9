@@ -76,12 +76,6 @@ ui = shiny::htmlTemplate(
   
   leaflet_map = leafletOutput(outputId = "map",width = "100%",height = "600"),
   
-  state_total_selector= checkboxInput("state_total", "total vaccines of the state", value = TRUE, width = NULL),
-  state_people_selector = checkboxInput("state_people", "total state people vaccinated", value = TRUE, width = NULL),
-  State_selector=selectInput("select_state", label = h3("Select state"), 
-                           choices = US_vaccine$location, 
-                           selected = "New York"),
-  
   mortality_years=sliderInput("year_mortality", "Mortality Years", 2015, 2021, value = c(2018, 2021))
   
 )
