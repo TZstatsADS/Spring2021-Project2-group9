@@ -189,25 +189,25 @@ Cases_URL <- "./csv_data/time_series_covid19_confirmed_global.csv"
 global_cases <- read.csv(Cases_URL)
 
 #get the daily global deaths data from API
-#Death_URL <- "https://raw.githubusercontent.com/CSSEGISandData/COVID-19/master/csse_covid_19_data/csse_covid_19_time_series/time_series_covid19_deaths_global.csv"
-Death_URL <- "./csv_data/time_series_covid19_deaths_global.csv"
+Death_URL <- "https://raw.githubusercontent.com/CSSEGISandData/COVID-19/master/csse_covid_19_data/csse_covid_19_time_series/time_series_covid19_deaths_global.csv"
+#Death_URL <- "./csv_data/time_series_covid19_deaths_global.csv"
 global_death <- read.csv(Death_URL)
 
-#Vaccine_URL <- "https://raw.githubusercontent.com/owid/covid-19-data/master/public/data/vaccinations/vaccinations.csv"
-Vaccine_URL <- "./csv_data/vaccinations.csv"
+Vaccine_URL <- "https://raw.githubusercontent.com/owid/covid-19-data/master/public/data/vaccinations/vaccinations.csv"
+#Vaccine_URL <- "./csv_data/vaccinations.csv"
 global_Vaccine <- read.csv(Vaccine_URL)
 
 
-#Recovered_URL<-"https://raw.githubusercontent.com/CSSEGISandData/COVID-19/master/csse_covid_19_data/csse_covid_19_time_series/time_series_covid19_recovered_global.csv"
-Recovered_URL<-"./csv_data/time_series_covid19_recovered_global.csv"
+Recovered_URL<-"https://raw.githubusercontent.com/CSSEGISandData/COVID-19/master/csse_covid_19_data/csse_covid_19_time_series/time_series_covid19_recovered_global.csv"
+#Recovered_URL<-"./csv_data/time_series_covid19_recovered_global.csv"
 global_recovered <-read.csv(Recovered_URL)
 
-#LookUp_Table_URL<-"https://raw.githubusercontent.com/CSSEGISandData/COVID-19/master/csse_covid_19_data/UID_ISO_FIPS_LookUp_Table.csv"
-LookUp_Table_URL<-"./csv_data/UID_ISO_FIPS_LookUp_Table.csv"
+LookUp_Table_URL<-"https://raw.githubusercontent.com/CSSEGISandData/COVID-19/master/csse_covid_19_data/UID_ISO_FIPS_LookUp_Table.csv"
+#LookUp_Table_URL<-"./csv_data/UID_ISO_FIPS_LookUp_Table.csv"
 lookup <-read.csv(LookUp_Table_URL)
 
-#Mortality_URL<-"https://raw.githubusercontent.com/akarlinsky/world_mortality/main/world_mortality.csv"
-Mortality_URL<-"./csv_data/world_mortality.csv"
+Mortality_URL<-"https://raw.githubusercontent.com/akarlinsky/world_mortality/main/world_mortality.csv"
+#Mortality_URL<-"./csv_data/world_mortality.csv"
 global_mortality <-read.csv(Mortality_URL)
 
 US_vaccine_URL<-"https://raw.githubusercontent.com/owid/covid-19-data/master/public/data/vaccinations/us_state_vaccinations.csv"

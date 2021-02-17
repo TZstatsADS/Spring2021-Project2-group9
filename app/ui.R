@@ -28,7 +28,7 @@ library(xts)
 library(gtrendsR)
 library(lubridate)
 library(wordcloud)
-#load('./output/covid-19.RData')
+load('./output/covid-19.RData')
 
 ui = shiny::htmlTemplate(
   # Index Page

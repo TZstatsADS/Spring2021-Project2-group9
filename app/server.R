@@ -31,8 +31,8 @@ library(wordcloud)
 #can run RData directly to get the necessary date for the app
 #global.r will enable us to get new data everyday
 #update data with automated script
-source("global.R") 
-#load('./output/covid-19.RData')
+#source("global.R") 
+load('./output/covid-19.RData')
 
 server = shinyServer(function(input, output) {
     
