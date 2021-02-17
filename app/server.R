@@ -392,18 +392,18 @@ server = shinyServer(function(input, output) {
         US_vaccine$date<-as.character(US_vaccine$date)
   
   
-    add_var<-function(a){
+        add_var<-function(a){
     
-        x<-sum(a$total_vaccinations)
-        y<-sum(a$people_vaccinated)
-        return(c(x,y))
-    }
+            x<-sum(a$total_vaccinations)
+            y<-sum(a$people_vaccinated)
+            return(c(x,y))
+        }
   
-    plot_US_vaccine<-ddply(US_vaccine,.(location),add_var)
-    plot_US_vaccine<-as.data.frame(plot_US_vaccine)
-    data_use<-arrange(plot_US_vaccine, desc(plot_US_vaccine$V1) 
+        plot_US_vaccine<-ddply(US_vaccine,.(location),add_var)
+        plot_US_vaccine<-as.data.frame(plot_US_vaccine)
+        data_use<-arrange(plot_US_vaccine, desc(plot_US_vaccine$V1) 
   
-    wordcloud2(data=data_use, size=4.6)
+        wordcloud2(data=data_use, size=4.6)
     })
     
   
