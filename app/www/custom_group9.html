@@ -60,7 +60,10 @@
                     <li><a class="smoothscroll"  href="#services" title="services">World Map</a></li>
                     <li><a class="smoothscroll"  href="#timeseries" title="timeseries">Time Series</a></li>
                     <li><a class="smoothscroll"  href="#search" title="search">Vaccine Interest</a></li>
-                    <li><a class="smoothscroll"  href="#data" title="data">Data Sources</a></li>
+                    <li><a class="smoothscroll"  href="#Analysis" title="Analysis">Death and Cases</a></li>
+					<li><a class="smoothscroll"  href="#Analysis2" title="Analysis2">Vaccination Data</a></li>
+					<li><a class="smoothscroll"  href="#Analysis3" title="Analysis3">States Cloud</a></li>
+					<li><a class="smoothscroll"  href="#data" title="data">Data Sources</a></li>
                 </ul>
     
                 <p>COVID 19 is a contagious disease caused by severe acute respitory syndrome coronavirus 2. The disease has since spread worldwide, leading to an ongoing pandemic. <a href='#0'> Group 9</a> created these analyses to provide insights on the pandemic using statistical methods in R.</p>
@@ -169,23 +172,23 @@
                 
             <div class="col-block stats__col">
                 <div class="stats__count">
-                  {{total_cases_text}}
+                  109
                 </div>
-                <h5>Total Cases</h5>
+                <h5>Total Cases(Million)</h5>
                 
             </div>
             <div class="col-block stats__col">
                 <div class="stats__count">
-                  {{total_death_text}}
+                  2.42
                 </div>
-                <h5>Total Death</h5>
+                <h5>Total Death(Million)</h5>
                 
             </div>
             <div class="col-block stats__col">
                 <div class="stats__count">
-                  {{total_recovered_text}}
+                  61.5
                 </div>
-                <h5>Total Recovered</h5> 
+                <h5>Total Recovered(Million)</h5> 
                 
             </div> 
 
@@ -259,7 +262,7 @@
 
     </section> 
 	
-    <section id='search' class="s-clients">
+    <section id='search' class="s-clients" style="background-color:#a1ccf7">
       
         <div class="row section-header has-bottom-sep aos-init aos-animate" data-aos="fade-up">
             <div class="col-full">
@@ -276,10 +279,41 @@
 	  <div class="panel-body"> 
         {{ dygraphOutput('vaccine_interest_timeline') }}
       </div>
+	  
+	  <h3 style="text-align:center">
+                We notice a spike in interest in vaccine manufacturers as measured by Google web search popularity.<br> 
+				This spans large well known pharmaceutical companies and smaller newcomers like BioNTech.<br>
+      </h3>
      
     </section> 
-    
-	<section id='Analysis' class="s-clients">
+	    
+    <section id='Analysis' class="s-clients" style="background-color:#f7e9a1">
+      
+        <div class="row section-header has-bottom-sep aos-init aos-animate" data-aos="fade-up">
+            <div class="col-full">
+               <h1 class="subhead">death and cases</h1>
+            </div>
+        </div>
+      <div class="panel-body"> 
+		{{plotOutput('plot4')}}
+      </div>
+
+      <div class="row services-list block-1-3 block-tab-full">
+        <div class="col-block service-item aos-init aos-animate" data-aos="fade-up">
+            {{ Cases_selector }}
+        </div>
+        <div class="col-block service-item aos-init aos-animate" data-aos="fade-up">
+            {{ Death_selector }}
+        </div>
+      </div>
+	    <h3 style="text-align:center">
+                US has the highest confirmed cases and deaths <br>
+                the countries with higher confirmed cases also have higher deaths<br>
+            </h3>
+
+    </section>
+	    
+	<section id='Analysis2' class="s-clients">
       
         <div class="row section-header has-bottom-sep aos-init aos-animate" data-aos="fade-up">
             <div class="col-full">
@@ -302,32 +336,30 @@
             {{ people_selector }}
         </div>
       </div>
+		<h3 style="text-align:center">
+                American has the largest amount of Vaccines, but the utilization rate of vaccines is not the highest <br>
+                The utilization rate of vaccines exceed 80 percent for each country of this six countries<br>
+		The utilization rate of countries with larger amounts of vaccines will be relatively lower than the utilization rate of those countries with smaller amount of total vaccines<br>
+                 developed countries vs developing countries<br>
+		</h3>
 
-    </section>  	
       
-
-    <section id='Analysis2' class="s-clients">
-      
-        <div class="row section-header has-bottom-sep aos-init aos-animate" data-aos="fade-up">
-            <div class="col-full">
-               <h1 class="subhead"> discussion about how death and cases confirmed related to vaccination</h1>
-            </div>
-        </div>
-      <div class="panel-body"> 
-		{{plotOutput('plot4')}}
-      </div>
-	 
-      
-      <div class="row services-list block-1-3 block-tab-full">
-        <div class="col-block service-item aos-init aos-animate" data-aos="fade-up">
-            {{ Cases_selector }}
-        </div>
-        <div class="col-block service-item aos-init aos-animate" data-aos="fade-up">
-            {{ Death_selector }}
-        </div>
-      </div>
-
-    </section>
+    </section> 
+	    
+   
+    
+    <section id='Analysis3' class="s-clients">
+  
+    	<div class="row section-header has-bottom-sep aos-init aos-animate" data-aos="fade-up">
+       		<div class="col-full">
+          		<h1 class="subhead"> vaccination in US</h1>
+       		</div>
+    	</div>
+   	 <div class="panel-body"> 
+  		{{plotOutput('plot5')}}
+    	</div>
+  
+      </section>	
     
     <!-- sources
     ================================================== -->
