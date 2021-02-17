@@ -348,14 +348,14 @@ server = shinyServer(function(input, output) {
 
     output$plot4<-renderPlot({
         cases<-global_cases[, c(2,389)]
-        cases<-cases[cases$Country.Region=="United Kingdom"|cases$Country.Region=="China"|cases$Country.Region=="Brazil"|cases$Country.Region=="Israel"|cases$Country.Region=="Italy"|cases$Country.Region=="Mexico"|cases$Country.Region=="US",]
+        cases<-cases[cases$Country.Region=="United Kingdom"|cases$Country.Region=="Brazil"|cases$Country.Region=="Israel"|cases$Country.Region=="Italy"|cases$Country.Region=="Mexico"|cases$Country.Region=="US",]
         add_function<-function(a){
             x<-sum(a$X2.9.21)
             return(x)
         }
         cases<-ddply(cases,.(Country.Region),add_function)
         death<-global_death[, c(2,389)]
-        death<-death[death$Country.Region=="United Kingdom"|death$Country.Region=="China"|death$Country.Region=="Brazil"|death$Country.Region=="Israel"|death$Country.Region=="Italy"|death$Country.Region=="Mexico"|death$Country.Region=="US",]
+        death<-death[death$Country.Region=="United Kingdom"|death$Country.Region=="Brazil"|death$Country.Region=="Israel"|death$Country.Region=="Italy"|death$Country.Region=="Mexico"|death$Country.Region=="US",]
         death<-ddply(death,.(Country.Region),add_function)  
         death_case<-cbind(death, cases[,2])
         
