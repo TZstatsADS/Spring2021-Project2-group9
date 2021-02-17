@@ -401,7 +401,7 @@ server = shinyServer(function(input, output) {
   
         plot_US_vaccine<-ddply(US_vaccine,.(location),add_var)
         plot_US_vaccine<-as.data.frame(plot_US_vaccine)
-        data_use<-arrange(plot_US_vaccine, desc(plot_US_vaccine$V1) 
+        data_use<-arrange(plot_US_vaccine, desc(plot_US_vaccine$V1)) 
   
         wordcloud2(data=data_use, size=4.6)
     })
