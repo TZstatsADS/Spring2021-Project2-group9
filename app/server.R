@@ -335,7 +335,7 @@ server = shinyServer(function(input, output) {
         
         if (input$People == TRUE && input$Total==TRUE){
             pltdeath<-       ggplot(plot_data_ana)+
-                geom_bar(stat="identity",aes(x=iso_code,y=V1,fill="total"))+
+                geom_bar(stat="identity",aes(x=iso_code,y=V1,fill="total Vaccinations- people Vaccinated"))+
                 geom_bar(stat="identity",aes(x=iso_code,y=V2,fill="people_vaccinated"))+
                 labs(y="Number of vaccines",x="country",title="Total Vaccinations VS. People Vaccinated")
         }
