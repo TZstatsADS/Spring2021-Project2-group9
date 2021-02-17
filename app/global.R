@@ -88,6 +88,10 @@ if (!require("lubridate")) {
   install.packages("lubridate")
   library(lubridate)
 }
+if (!require("wordcloud2")) {
+  install.packages("wordcloud2")
+  library(wordcloud2)
+}
 #--------------------------------------------------------------------
 ###############################Define Functions#######################
 data_cooker <- function(df){
@@ -205,6 +209,9 @@ lookup <-read.csv(LookUp_Table_URL)
 #Mortality_URL<-"https://raw.githubusercontent.com/akarlinsky/world_mortality/main/world_mortality.csv"
 Mortality_URL<-"./csv_data/world_mortality.csv"
 global_mortality <-read.csv(Mortality_URL)
+
+US_vaccine_URL<-"https://raw.githubusercontent.com/owid/covid-19-data/master/public/data/vaccinations/us_state_vaccinations.csv"
+US_vaccine<-read.csv(US_vaccine_URL)
 
 ####global mortality cleanup
 global_mortality_timeseries_cleaned <-data_mortality_cooker(select(global_mortality, country=1,year=year,time=time,unit=time_unit,deaths=deaths))
