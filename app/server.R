@@ -27,6 +27,7 @@ library(tidyr)
 library(xts)
 library(gtrendsR)
 library(lubridate)
+library(wordcloud2)
 #can run RData directly to get the necessary date for the app
 #global.r will enable us to get new data everyday
 #update data with automated script
@@ -381,6 +382,28 @@ server = shinyServer(function(input, output) {
         
         }
         plt_death+theme(axis.text.x = element_text(angle = 45, hjust = 1))
+    })
+    
+    output$plot5<-renderPlot({
+        US_vaccine<-US_vaccine%>%
+            select(location,date,total_vaccinations, people_vaccinated) 
+        US_vaccine<-US_vaccine[which(!is.na(US_vaccine$total_vaccinations)),]
+        US_vaccine<-US_vaccine[which(!is.na(US_vaccine$people_vaccinated)),]
+        US_vaccine$date<-as.character(US_vaccine$date)
+  
+  
+    add_var<-function(a){
+    
+        x<-sum(a$total_vaccinations)
+        y<-sum(a$people_vaccinated)
+        return(c(x,y))
+    }
+  
+    plot_US_vaccine<-ddply(US_vaccine,.(location),add_var)
+    plot_US_vaccine<-as.data.frame(plot_US_vaccine)
+    data_use<-arrange(plot_US_vaccine, desc(plot_US_vaccine$V1) 
+  
+    wordcloud2(data=data_use, size=4.6)
     })
     
   
