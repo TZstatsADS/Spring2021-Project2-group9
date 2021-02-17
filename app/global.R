@@ -88,9 +88,9 @@ if (!require("lubridate")) {
   install.packages("lubridate")
   library(lubridate)
 }
-if (!require("wordcloud2")) {
-  install.packages("wordcloud2")
-  library(wordcloud2)
+if (!require("wordcloud")) {
+  install.packages("wordcloud")
+  library(wordcloud)
 }
 #--------------------------------------------------------------------
 ###############################Define Functions#######################
