@@ -285,8 +285,6 @@ server = shinyServer(function(input, output) {
     
     output$plot3<-renderPlot({
         
-        Vaccine_URL <- "https://raw.githubusercontent.com/owid/covid-19-data/master/public/data/vaccinations/vaccinations.csv"
-        global_Vaccine <- read.csv(Vaccine_URL)
         #data 
         ana_data<-global_Vaccine%>%
             select(location,iso_code,date,total_vaccinations, people_vaccinated)
@@ -337,7 +335,7 @@ server = shinyServer(function(input, output) {
         
         if (input$People == TRUE && input$Total==TRUE){
             pltdeath<-       ggplot(plot_data_ana)+
-                geom_bar(stat="identity",aes(x=iso_code,y=V1,fill="total"))+
+                geom_bar(stat="identity",aes(x=iso_code,y=V1,fill="total Vaccinations- people Vaccinated"))+
                 geom_bar(stat="identity",aes(x=iso_code,y=V2,fill="people_vaccinated"))+
                 labs(y="Number of vaccines",x="country",title="Total Vaccinations VS. People Vaccinated")
         }
@@ -348,14 +346,14 @@ server = shinyServer(function(input, output) {
 
     output$plot4<-renderPlot({
         cases<-global_cases[, c(2,389)]
-        cases<-cases[cases$Country.Region=="United Kingdom"|cases$Country.Region=="China"|cases$Country.Region=="Brazil"|cases$Country.Region=="Israel"|cases$Country.Region=="Italy"|cases$Country.Region=="Mexico"|cases$Country.Region=="US",]
+        cases<-cases[cases$Country.Region=="United Kingdom"|cases$Country.Region=="Brazil"|cases$Country.Region=="Israel"|cases$Country.Region=="Italy"|cases$Country.Region=="Mexico"|cases$Country.Region=="US",]
         add_function<-function(a){
             x<-sum(a$X2.9.21)
             return(x)
         }
         cases<-ddply(cases,.(Country.Region),add_function)
         death<-global_death[, c(2,389)]
-        death<-death[death$Country.Region=="United Kingdom"|death$Country.Region=="China"|death$Country.Region=="Brazil"|death$Country.Region=="Israel"|death$Country.Region=="Italy"|death$Country.Region=="Mexico"|death$Country.Region=="US",]
+        death<-death[death$Country.Region=="United Kingdom"|death$Country.Region=="Brazil"|death$Country.Region=="Israel"|death$Country.Region=="Italy"|death$Country.Region=="Mexico"|death$Country.Region=="US",]
         death<-ddply(death,.(Country.Region),add_function)  
         death_case<-cbind(death, cases[,2])
         
