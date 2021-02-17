@@ -285,8 +285,6 @@ server = shinyServer(function(input, output) {
     
     output$plot3<-renderPlot({
         
-        Vaccine_URL <- "https://raw.githubusercontent.com/owid/covid-19-data/master/public/data/vaccinations/vaccinations.csv"
-        global_Vaccine <- read.csv(Vaccine_URL)
         #data 
         ana_data<-global_Vaccine%>%
             select(location,iso_code,date,total_vaccinations, people_vaccinated)
